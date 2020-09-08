@@ -13,7 +13,7 @@ Pod::Spec.new do |s|
   s.platform     = :ios, "8.0"
 
   s.source       = { :git => "https://github.com/thinh185/react-native-zoom-us" }
-  s.source_files  = "ios/*.{h,m}"
+  s.source_files  = "ios/*"
   s.requires_arc = true
 
   s.libraries = "sqlite3", "z.1.2.5", "c++"
