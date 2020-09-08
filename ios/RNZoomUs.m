@@ -51,7 +51,8 @@ RCT_EXPORT_METHOD(
   @try {
     initializePromiseResolve = resolve;
     initializePromiseReject = reject;
-
+    self.languageArray = [[MobileRTC sharedRTC] supportedLanguages];
+    [[MobileRTC sharedRTC] setLanguage:_languageArray[1]];
     MobileRTCSDKInitContext *context = [[MobileRTCSDKInitContext alloc] init];
     context.domain = webDomain;
     context.enableLog = YES;

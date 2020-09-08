@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2547B56A25073A1800CFDE0D /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2547B56C25073A1800CFDE0D /* Localizable.strings */; };
 		35B9664A2139997D009ECAC1 /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 35B966492139997D009ECAC1 /* CoreBluetooth.framework */; };
 		35B9664C2139998B009ECAC1 /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 35B9664B2139998B009ECAC1 /* VideoToolbox.framework */; };
 		B3E7B58A1CC2AC0600A0062D /* RNZoomUs.m in Sources */ = {isa = PBXBuildFile; fileRef = B3E7B5891CC2AC0600A0062D /* RNZoomUs.m */; };
@@ -26,6 +27,9 @@
 
 /* Begin PBXFileReference section */
 		134814201AA4EA6300B7C361 /* libRNZoomUs.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNZoomUs.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		2547B56B25073A1800CFDE0D /* vi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = vi; path = vi.lproj/Localizable.strings; sourceTree = "<group>"; };
+		2547B56D25073A1D00CFDE0D /* English */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/Localizable.strings; sourceTree = "<group>"; };
+		2547B56E25073A1E00CFDE0D /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		35B96644213998A6009ECAC1 /* MobileRTC.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileRTC.framework; path = libs/MobileRTC.framework; sourceTree = SOURCE_ROOT; };
 		35B96647213998D0009ECAC1 /* MobileRTCResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = MobileRTCResources.bundle; path = libs/MobileRTCResources.bundle; sourceTree = "<group>"; };
 		35B966492139997D009ECAC1 /* CoreBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBluetooth.framework; path = System/Library/Frameworks/CoreBluetooth.framework; sourceTree = SDKROOT; };
@@ -68,6 +72,7 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				2547B56C25073A1800CFDE0D /* Localizable.strings */,
 				35B96647213998D0009ECAC1 /* MobileRTCResources.bundle */,
 				B3E7B5881CC2AC0600A0062D /* RNZoomUs.h */,
 				B3E7B5891CC2AC0600A0062D /* RNZoomUs.m */,
@@ -118,6 +123,7 @@
 			knownRegions = (
 				English,
 				en,
+				vi,
 			);
 			mainGroup = 58B511D21A9E6C8500147676;
 			productRefGroup = 58B511D21A9E6C8500147676;
@@ -134,6 +140,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2547B56A25073A1800CFDE0D /* Localizable.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -149,6 +156,19 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		2547B56C25073A1800CFDE0D /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				2547B56B25073A1800CFDE0D /* vi */,
+				2547B56D25073A1D00CFDE0D /* English */,
+				2547B56E25073A1E00CFDE0D /* en */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		58B511ED1A9E6C8500147676 /* Debug */ = {

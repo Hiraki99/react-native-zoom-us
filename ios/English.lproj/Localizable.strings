@@ -1,0 +1,13 @@
+/* 
+  Localizable.strings
+  RNZoomUs
+
+  Created by Nguyen Ngoc Thinh on 9/8/20.
+  Copyright © 2020 Facebook. All rights reserved.
+*/
+
+"Waiting..." = "Sample Waiting...";
+"Zoom" = "SDK Sample";
+"Leave" = "Exit";
+"Leave Meeting" = "Exit Meeting";
+
