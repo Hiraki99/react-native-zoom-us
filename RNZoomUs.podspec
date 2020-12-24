@@ -14,7 +14,7 @@ Pod::Spec.new do |s|
 
   s.source       = { :git => "https://github.com/phu2810/react-native-zoom-us.git" }
   s.source_files  = "ios/*"
-  s.requires_arc = true
+  s.requires_arc = false
 
   s.libraries = "sqlite3", "z.1.2.5", "c++"
 
