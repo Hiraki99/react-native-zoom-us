@@ -25,7 +25,7 @@ Pod::Spec.new do |s|
   s.prefix_header_contents = "
 #import <Foundation/Foundation.h>
 #import <MobileRTC/MobileRTC.h>
-
+#import \"RNZoomAppDelegate.h\"
 //for iOS version check
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 #define IsIphoneX  ([UIScreen instancesRespondToSelector:@selector(currentMode)] ? CGSizeEqualToSize(CGSizeMake(1125,2436), [[UIScreen mainScreen] currentMode].size) : NO)
