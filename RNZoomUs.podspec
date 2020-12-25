@@ -14,8 +14,10 @@ Pod::Spec.new do |s|
 
   s.source       = { :git => "https://github.com/phu2810/react-native-zoom-us.git" }
   s.source_files  = "ios/*", "ios/src/**/*"
-  s.prefix_header_contents = "#import <Foundation/Foundation.h>"
-  s.prefix_header_contents = "#import <MobileRTC/MobileRTC.h>"
+  s.prefix_header_contents = "
+  #import <Foundation/Foundation.h>
+  #import <MobileRTC/MobileRTC.h>
+  "
   s.requires_arc = false
 
   s.libraries = "sqlite3", "z.1.2.5", "c++"
