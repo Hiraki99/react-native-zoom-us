@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   s.source_files  = "ios/*", "ios/src/**/*"
 
   s.requires_arc = false
-  s.requires_arc = true => 'ios/src/ReactNative/RNZoomViewManager.m'
+  s.requires_arc = 'ios/src/ReactNative/RNZoomViewManager.m'
 
   s.libraries = "sqlite3", "z.1.2.5", "c++"
 
