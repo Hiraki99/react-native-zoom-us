@@ -15,7 +15,10 @@ export default class RNZoomView extends PureComponent {
 
   render() {
     return (
-        <NativeZoomView style={this.props.style} />
+        <NativeZoomView
+            style={this.props.style}
+            zoomInfo={this.props.zoomInfo}
+        />
     );
   }
 }

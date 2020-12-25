@@ -88,6 +88,7 @@
 		BF40E8E22595865500D40992 /* OpenglView.m in Sources */ = {isa = PBXBuildFile; fileRef = BF40E8952595865500D40992 /* OpenglView.m */; };
 		BF40E8E32595865500D40992 /* ScheduleTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BF40E8962595865500D40992 /* ScheduleTableViewController.m */; };
 		BF40E8E42595865500D40992 /* MainViewController+MeetingDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = BF40E8972595865500D40992 /* MainViewController+MeetingDelegate.m */; };
+		BF40EB05259597CC00D40992 /* RNZoomViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = BF40EB03259597CC00D40992 /* RNZoomViewManager.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -264,6 +265,8 @@
 		BF40E8952595865500D40992 /* OpenglView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OpenglView.m; sourceTree = "<group>"; };
 		BF40E8962595865500D40992 /* ScheduleTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScheduleTableViewController.m; sourceTree = "<group>"; };
 		BF40E8972595865500D40992 /* MainViewController+MeetingDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "MainViewController+MeetingDelegate.m"; sourceTree = "<group>"; };
+		BF40EB03259597CC00D40992 /* RNZoomViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNZoomViewManager.m; sourceTree = "<group>"; };
+		BF40EB04259597CC00D40992 /* RNZoomViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNZoomViewManager.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -685,6 +688,8 @@
 		BF40E8872595865500D40992 /* ReactNative */ = {
 			isa = PBXGroup;
 			children = (
+				BF40EB04259597CC00D40992 /* RNZoomViewManager.h */,
+				BF40EB03259597CC00D40992 /* RNZoomViewManager.m */,
 				BF40E8882595865500D40992 /* RNMeetingCenter.m */,
 				BF40E8892595865500D40992 /* DemoViewController.h */,
 				BF40E88A2595865500D40992 /* RNZoomView+MeetingDelegate.h */,
@@ -854,6 +859,7 @@
 				BF40E8B32595865500D40992 /* SDKStartJoinMeetingPresenter+LoginUser.m in Sources */,
 				BF40E89E2595865500D40992 /* InviteViewController.m in Sources */,
 				BF40E8DE2595865500D40992 /* RNZoomView.m in Sources */,
+				BF40EB05259597CC00D40992 /* RNZoomViewManager.m in Sources */,
 				BF40E8DD2595865500D40992 /* RNMeetingCenter.m in Sources */,
 				BF40E8C52595865500D40992 /* LocalShareViewController.m in Sources */,
 			);

@@ -17,7 +17,12 @@
 
 @implementation RNZoomView
 
+-(void)reactSetFrame:(CGRect)frame{
+    self.frame=frame;
+}
+
 - (void) setZoomInfo:(NSDictionary *) zoomInfo {
+    NSLog(@"+++ set zoom info %@", zoomInfo);
     self.zoomDic = [[NSDictionary alloc] initWithDictionary:zoomInfo];
     [self startJoinRoom];
 }

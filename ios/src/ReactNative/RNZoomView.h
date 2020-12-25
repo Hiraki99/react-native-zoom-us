@@ -7,6 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <React/UIView+React.h>
+#import <React/RCTResizeMode.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -15,6 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RNZoomView : UIView
 
 @property (strong, nonatomic) RNMeetingView *rnMeetingView;
+@property (strong, nonatomic) NSDictionary *zoomInfo;
 
 - (void) setZoomInfo:(NSDictionary *) zoomInfo;
 - (void) joinRoomWithUserInfo:(void (^)(NSString *displayName, NSString *password, BOOL cancel))completion;

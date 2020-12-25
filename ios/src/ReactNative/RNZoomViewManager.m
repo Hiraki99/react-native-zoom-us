@@ -12,15 +12,11 @@
 
 @implementation RNZoomViewManager
 
+RCT_EXPORT_VIEW_PROPERTY(zoomInfo, NSDictionary);
+
 - (UIView *)view
 {
     RNZoomView *rnZoomView = [[RNZoomView alloc] init];
-    [rnZoomView setZoomInfo:@{
-        @"roomNumber": @"75525947059",
-        @"roomPassword": @"F0b9ev",
-        @"userDisplayName": @"Phu2",
-        @"userPassword": @"123",
-    }];
     return rnZoomView;
 }
 RCT_EXPORT_MODULE();
