@@ -41,7 +41,15 @@
 - (void)layoutSubviews {
     [super layoutSubviews];
     self.videoView.frame = self.bounds;
-    self.preVideoView.frame = self.bounds;
+    self.preVideoView.frame = [self previewFrame];
+}
+- (CGRect) previewFrame {
+    CGRect frame = self.bounds;
+    frame.origin.x = frame.size.width - frame.size.width/3;
+    frame.origin.y = 0;
+    frame.size.width = frame.size.width/3;
+    frame.size.height = frame.size.height/3;
+    return frame;
 }
 - (MobileRTCActiveVideoView*)videoView
 {
@@ -56,7 +64,7 @@
 {
     if (!_preVideoView)
     {
-        _preVideoView = [[MobileRTCPreviewVideoView alloc] initWithFrame:self.bounds];
+        _preVideoView = [[MobileRTCPreviewVideoView alloc] initWithFrame:[self previewFrame]];
     }
     return _preVideoView;
 }

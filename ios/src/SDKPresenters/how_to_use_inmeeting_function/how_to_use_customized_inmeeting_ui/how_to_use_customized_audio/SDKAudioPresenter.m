@@ -37,27 +37,33 @@
                 {
                     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"8"))
                     {
-                        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"To hear others\n please join audio", @"")
-                                                                                                 message:nil
-                                                                                          preferredStyle:UIAlertControllerStyleAlert];
-                        
-                        [alertController addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Call via Internet", @"") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-                            //Join VOIP
-                            MobileRTCMeetingService *ms = [[MobileRTC sharedRTC] getMeetingService];
-                            if (ms)
-                            {
-                                [ms connectMyAudio:YES];
-                            }
-                        }]];
-                        
-                        [alertController addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Dial in", @"") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-                            [self dialIn];
-                        }]];
-                        
-                        [alertController addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
-                        }]];
-                        RNZoomAppDelegate *appDelegate = (RNZoomAppDelegate *)[UIApplication sharedApplication].delegate;
-                        [[appDelegate topViewController] presentViewController:alertController animated:YES completion:nil];
+                        // Phunv: Comment + add code
+                        MobileRTCMeetingService *ms = [[MobileRTC sharedRTC] getMeetingService];
+                        if (ms)
+                        {
+                            [ms connectMyAudio:YES];
+                        }
+//                        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"To hear others\n please join audio", @"")
+//                                                                                                 message:nil
+//                                                                                          preferredStyle:UIAlertControllerStyleAlert];
+//
+//                        [alertController addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Call via Internet", @"") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+//                            //Join VOIP
+//                            MobileRTCMeetingService *ms = [[MobileRTC sharedRTC] getMeetingService];
+//                            if (ms)
+//                            {
+//                                [ms connectMyAudio:YES];
+//                            }
+//                        }]];
+//
+//                        [alertController addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Dial in", @"") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+//                            [self dialIn];
+//                        }]];
+//
+//                        [alertController addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+//                        }]];
+//                        RNZoomAppDelegate *appDelegate = (RNZoomAppDelegate *)[UIApplication sharedApplication].delegate;
+//                        [[appDelegate topViewController] presentViewController:alertController animated:YES completion:nil];
                     }
                 }
                 break;

@@ -15,6 +15,8 @@
 
 @interface SDKInitPresenter : NSObject
 
-- (void)SDKInit:(UINavigationController *)navVC;
+// Phunv: Sua ham
+//- (void)SDKInit:(UINavigationController *)navVC;
+- (void)SDKInit:(NSString *)domain;
 
 @end

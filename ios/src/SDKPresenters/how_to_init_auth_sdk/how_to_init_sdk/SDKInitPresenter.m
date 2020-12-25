@@ -10,14 +10,16 @@
 
 @implementation SDKInitPresenter
 
-- (void)SDKInit:(UINavigationController *)navVC
+// Phunv: Sua param thanh truyen domain
+//- (void)SDKInit:(UINavigationController *)navVC
+- (void)SDKInit:(NSString *)domain
 {
     //1. initSDK
 //    [MobileRTC initializeWithDomain:kSDKDomain enableLog:YES];
 //    [[MobileRTC sharedRTC] setMobileRTCDomain:kSDKDomain];
     
     MobileRTCSDKInitContext *context = [[MobileRTCSDKInitContext alloc] init];
-    context.domain = kSDKDomain;
+    context.domain = domain;
     context.enableLog = YES;
     context.locale = MobileRTC_ZoomLocale_Default;
 
@@ -32,7 +34,8 @@
 //       [[MobileRTC sharedRTC] setMobileRTCCustomLocalizableName:@"Custom"];
 //   //3. Set Root Navigation Controller
 //   //Note: This step is optional, If app’s rootViewController is not a UINavigationController, just ignore this step.
-    [[MobileRTC sharedRTC] setMobileRTCRootController:navVC];
+    // Phunv: Tat navVC
+    [[MobileRTC sharedRTC] setMobileRTCRootController:nil];// navVC
 }
 
 //- (BOOL)isChinaLocale

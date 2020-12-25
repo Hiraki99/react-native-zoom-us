@@ -9,13 +9,14 @@
 #import "RNZoomViewManager.h"
 #import <React/UIView+React.h>
 #import "RNZoomView.h"
+#import "RNMeetingCenter.h"
 
 @implementation RNZoomViewManager
 
 - (UIView *)view
 {
     RNZoomView *rnZoomView = [[RNZoomView alloc] init];
-    
+    [RNMeetingCenter shared].currentZoomView = rnZoomView;
     return rnZoomView;
 }
 RCT_EXPORT_MODULE();

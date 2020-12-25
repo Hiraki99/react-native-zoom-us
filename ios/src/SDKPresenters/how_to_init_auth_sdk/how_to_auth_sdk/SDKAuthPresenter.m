@@ -17,7 +17,9 @@
 
 @implementation SDKAuthPresenter
 
-- (void)SDKAuth:(NSString *)jwtToken
+// Phunv: sua ham
+//- (void)SDKAuth:(NSString *)jwtToken
+- (void)SDKAuthWithClientKey:(NSString *)clientKey clientSecret: (NSString *) clientSecret
 {
 
     MobileRTCAuthService *authService = [[MobileRTC sharedRTC] getAuthService];
@@ -26,8 +28,8 @@
         authService.delegate = self;
         // Here need add your jwtToken, if jwtToken is nil or empty,We will user your clientKey and clientSecret to Auth, We recommend using JWTToken.
         // Phunv: Sua de authen qua clientKey va clientSecret, khong dung qua jwtToken
-        authService.clientKey = @"yaEkS5rguwHNuFvqOsDh8VMvZOkRSNEMJpjn";
-        authService.clientSecret = @"ngtmOzHAu0FwI55Faoe0AD3tVm86D3XfkzTj";
+        authService.clientKey = clientKey;
+        authService.clientSecret = clientSecret;
         authService.jwtToken = nil; // jwtToken;
         [authService sdkAuth];
     }

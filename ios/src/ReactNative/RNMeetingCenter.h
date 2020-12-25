@@ -16,12 +16,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (instancetype)shared;
 
+@property (nonatomic, strong) NSDictionary *zoomClientInfo;
 @property (nonatomic, weak) RNZoomView *currentZoomView;
 
-- (void)joinMeeting:(NSString*)meetingNo withPassword:(NSString*)pwd rnZoomView:(id) rnZoomView;
+- (void) setClientInfo:(NSDictionary *) clientInfo;
+- (void) joinMeeting:(NSDictionary *) meetingInfo;
+- (void) joinMeeting:(NSString*)meetingNo withPassword:(NSString*)pwd rnZoomView:(id) rnZoomView;
 - (void) leaveCurrentMeeting;
 - (void) checkPendingJoinMeetingAfterAuth;
 - (BOOL) isEnableRNMeetingView;
+- (void) onOffMyAudio;
+- (void) onOffMyVideo;
+- (void) switchMyCamera;
+- (NSArray *) getParticipants;
 @end
 
 NS_ASSUME_NONNULL_END

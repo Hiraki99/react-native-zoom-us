@@ -10,7 +10,9 @@
 
 @interface SDKAuthPresenter : NSObject 
 
-- (void)SDKAuth:(NSString *)jwtToken;
+// Phunv: Sua ham
+//- (void)SDKAuth:(NSString *)jwtToken;
+- (void)SDKAuthWithClientKey:(NSString *)clientKey clientSecret: (NSString *) clientSecret;
 
 @end
 

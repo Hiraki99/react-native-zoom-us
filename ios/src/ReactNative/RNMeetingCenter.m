@@ -18,6 +18,8 @@
 
 @interface RNMeetingCenter()
 
+@property (strong, nonatomic) SDKInitPresenter             *setUpPresenter;
+@property (strong, nonatomic) SDKAuthPresenter             *authPresenter;
 @property (strong, nonatomic) SDKStartJoinMeetingPresenter *presenter;
 @property (strong, nonatomic) SDKAudioPresenter            *audioPresenter;
 @property (strong, nonatomic) SDKVideoPresenter            *videoPresenter;
@@ -37,17 +39,40 @@
     dispatch_once(&onceToken, ^{
         sharedInstance = [[RNMeetingCenter alloc] init];
         // Do any other initialisation stuff here
-        
-        // SDK init
-        [[[SDKInitPresenter alloc] init] SDKInit:nil];
-        
-        //4. MobileRTC Authorize
-        [[[SDKAuthPresenter alloc] init] SDKAuth: nil];
     });
     return sharedInstance;
 }
+- (void) setClientInfo:(NSDictionary *) clientInfo {
+    if (!self.zoomClientInfo) {
+        self.zoomClientInfo = [[NSDictionary alloc] initWithDictionary:clientInfo];
+        NSString *domain = self.zoomClientInfo[@"domain"] ?: @"";
+        NSString *clientKey = self.zoomClientInfo[@"clientKey"] ?: @"";
+        NSString *clientSecret = self.zoomClientInfo[@"clientSecret"] ?: @"";
+        
+        [self.setUpPresenter SDKInit:domain];
+        [self.authPresenter SDKAuthWithClientKey:clientKey clientSecret:clientSecret];
+    }
+}
 - (BOOL) isEnableRNMeetingView {
     return YES;
+}
+- (SDKInitPresenter *)setUpPresenter
+{
+    if (!_setUpPresenter)
+    {
+        _setUpPresenter = [[SDKInitPresenter alloc] init];
+    }
+    
+    return _setUpPresenter;
+}
+- (SDKAuthPresenter *)authPresenter
+{
+    if (!_authPresenter)
+    {
+        _authPresenter = [[SDKAuthPresenter alloc] init];
+    }
+    
+    return _authPresenter;
 }
 - (SDKStartJoinMeetingPresenter *)presenter
 {
@@ -88,6 +113,11 @@
     return _actionPresenter;
 }
 
+- (void) joinMeeting:(NSDictionary *) meetingInfo {
+    if (self.currentZoomView) {
+        [self.currentZoomView setZoomInfo:meetingInfo];
+    }
+}
 - (void)joinMeeting:(NSString*)meetingNo withPassword:(NSString*)pwd rnZoomView:(id)rnZoomView
 {
     MobileRTCMeetingService *ms = [[MobileRTC sharedRTC] getMeetingService];
@@ -121,6 +151,19 @@
     MobileRTCMeetingService *ms = [[MobileRTC sharedRTC] getMeetingService];
     if (!ms) return;
     [ms leaveMeetingWithCmd:LeaveMeetingCmd_Leave];
+}
+- (void) onOffMyAudio {
+    [self.audioPresenter muteMyAudio];
+}
+- (void) onOffMyVideo {
+    [self.videoPresenter muteMyVideo];
+}
+- (void) switchMyCamera {
+    [self.videoPresenter switchMyCamera];
+}
+- (NSArray *) getParticipants {
+    MobileRTCMeetingService *ms = [[MobileRTC sharedRTC] getMeetingService];
+    return [ms getInMeetingUserList];
 }
 @end
 

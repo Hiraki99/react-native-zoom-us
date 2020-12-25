@@ -22,8 +22,10 @@
 }
 
 - (void) setZoomInfo:(NSDictionary *) zoomInfo {
-    self.zoomDic = [[NSDictionary alloc] initWithDictionary:zoomInfo];
-    [self startJoinRoom];
+    if (!self.zoomDic) {
+        self.zoomDic = [[NSDictionary alloc] initWithDictionary:zoomInfo];
+        [self startJoinRoom];
+    }
 }
 
 - (void) startJoinRoom {
