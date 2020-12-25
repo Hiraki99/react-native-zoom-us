@@ -17,7 +17,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RNZoomView : UIView
 
 @property (strong, nonatomic) RNMeetingView *rnMeetingView;
-@property (strong, nonatomic) NSDictionary *zoomInfo;
 
 - (void) setZoomInfo:(NSDictionary *) zoomInfo;
 - (void) joinRoomWithUserInfo:(void (^)(NSString *displayName, NSString *password, BOOL cancel))completion;

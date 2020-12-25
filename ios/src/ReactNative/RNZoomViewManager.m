@@ -12,8 +12,6 @@
 
 @implementation RNZoomViewManager
 
-RCT_EXPORT_VIEW_PROPERTY(zoomInfo, NSDictionary);
-
 - (UIView *)view
 {
     RNZoomView *rnZoomView = [[RNZoomView alloc] init];
