@@ -1,5 +1,5 @@
 #import "PreProcessHelper.h"
-#import "MobileRTCSample-Prefix.pch"
+#import "RNZoomUs-prefix.pch"
 
 @implementation PreProcessHelper
 
