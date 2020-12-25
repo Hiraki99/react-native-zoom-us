@@ -15,6 +15,7 @@
 - (UIView *)view
 {
     RNZoomView *rnZoomView = [[RNZoomView alloc] init];
+    
     return rnZoomView;
 }
 RCT_EXPORT_MODULE();

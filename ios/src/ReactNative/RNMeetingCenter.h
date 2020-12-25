@@ -10,9 +10,13 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class RNZoomView;
+
 @interface RNMeetingCenter : NSObject
 
 + (instancetype)shared;
+
+@property (nonatomic, weak) RNZoomView *currentZoomView;
 
 - (void)joinMeeting:(NSString*)meetingNo withPassword:(NSString*)pwd rnZoomView:(id) rnZoomView;
 - (void) leaveCurrentMeeting;

@@ -18,7 +18,7 @@
 
 @interface RNMeetingCenter()
 
-@property (retain, nonatomic) SDKStartJoinMeetingPresenter *presenter;
+@property (strong, nonatomic) SDKStartJoinMeetingPresenter *presenter;
 @property (strong, nonatomic) SDKAudioPresenter            *audioPresenter;
 @property (strong, nonatomic) SDKVideoPresenter            *videoPresenter;
 @property (strong, nonatomic) SDKActionPresenter           *actionPresenter;
