@@ -1,29 +1,29 @@
+////
+////  OGWaveManager.m
+////  OGReactNativeWaveform
+////
+////  Created by juan Jimenez on 10/01/2017.
+////  Copyright © 2017 Facebook. All rights reserved.
+////
 //
-//  OGWaveManager.m
-//  OGReactNativeWaveform
+//#import "RNZoomViewManager.h"
+//#import <React/UIView+React.h>
+//#import "RNZoomView.h"
+//#import "RNMeetingCenter.h"
 //
-//  Created by juan Jimenez on 10/01/2017.
-//  Copyright © 2017 Facebook. All rights reserved.
+//@implementation RNZoomViewManager
 //
-
-#import "RNZoomViewManager.h"
-#import <React/UIView+React.h>
-#import "RNZoomView.h"
-#import "RNMeetingCenter.h"
-
-@implementation RNZoomViewManager
-
-- (UIView *)view
-{
-    RNZoomView *rnZoomView = [[RNZoomView alloc] init];
-    [RNMeetingCenter shared].currentZoomView = rnZoomView;
-    return rnZoomView;
-}
-RCT_EXPORT_MODULE();
-
-- (dispatch_queue_t)methodQueue
-{
-    return dispatch_get_main_queue();
-}
-
-@end
+//- (UIView *)view
+//{
+//    RNZoomView *rnZoomView = [[RNZoomView alloc] init];
+//    [RNMeetingCenter shared].currentZoomView = rnZoomView;
+//    return rnZoomView;
+//}
+//RCT_EXPORT_MODULE();
+//
+//- (dispatch_queue_t)methodQueue
+//{
+//    return dispatch_get_main_queue();
+//}
+//
+//@end

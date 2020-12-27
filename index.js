@@ -1,6 +1,55 @@
+/**
+ * Created by juanjimenez on 07/12/2016.
+ * Otomogroove ltd 2017
+ */
 
-import { NativeModules } from 'react-native';
+'use strict';
+import React, {forwardRef, PureComponent, useImperativeHandle} from 'react';
+import {requireNativeComponent, UIManager, findNodeHandle} from 'react-native';
+const NativeZoomView = requireNativeComponent('RNZoomUs', RNZoomView);
 
-const { RNZoomUs } = NativeModules;
+const config = {
+  zoom: {
+    appKey: 'fWBEHJbyD7SHbkTcX4LnfMVMkMV6biVtWDor', // TODO: appKey
+    appSecret: 'TfuTLZCeeFhbwSuuq95gIQvVkxWyxyDJbhgX', // TODO appSecret
+    domain: 'zoom.us',
+  },
+};
 
-export default RNZoomUs;
+const RNZoomViewRef = (props, ref) => {
+  const nativeZoomViewRef = React.useRef();
+
+  const joinMeetingWithPassword = React.useCallback((data) => {
+    UIManager.dispatchViewManagerCommand(
+      findNodeHandle(nativeZoomViewRef),
+      UIManager.RNZoomUs.Commands.initZoomSDK,
+      [data],
+    );
+  }, []);
+
+  React.useEffect(() => {
+    UIManager.dispatchViewManagerCommand(
+      nativeZoomViewRef,
+      UIManager.RNZoomUs.Commands.initZoomSDK,
+      [
+        {
+          domain: 'zoom.us',
+          clientKey: 'yaEkS5rguwHNuFvqOsDh8VMvZOkRSNEMJpjn',
+          clientSecret: 'ngtmOzHAu0FwI55Faoe0AD3tVm86D3XfkzTj',
+        },
+      ],
+    );
+  }, []);
+
+  useImperativeHandle(ref, () => ({
+    joinMeetingWithPassword: (data) => {
+      joinMeetingWithPassword(data);
+    },
+  }));
+
+  return <NativeZoomView ref={nativeZoomViewRef} style={props.style} />;
+};
+
+const RNZoomView = React.forwardRef(RNZoomViewRef);
+
+export default RNZoomView;

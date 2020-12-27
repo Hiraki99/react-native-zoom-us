@@ -4,10 +4,11 @@
 #else
 #import <React/RCTBridgeModule.h>
 #endif
-
 #import <MobileRTC/MobileRTC.h>
+#import <React/RCTViewManager.h>
 
-@interface RNZoomUs : NSObject <RCTBridgeModule, MobileRTCAuthDelegate, MobileRTCMeetingServiceDelegate>
-    @property NSArray *languageArray;
+@interface RNZoomUs : RCTViewManager
 @end
 
+
+//@interface RNZoomUs : NSObject <RCTBridgeModule, MobileRTCAuthDelegate, MobileRTCMeetingServiceDthinhelegate>

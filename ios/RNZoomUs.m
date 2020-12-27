@@ -1,5 +1,6 @@
-
 #import "RNZoomUs.h"
+#import "RNZoomView.h"
+#import "RNMeetingCenter.h"
 
 @implementation RNZoomUs
 {
@@ -8,6 +9,7 @@
   RCTPromiseRejectBlock initializePromiseReject;
   RCTPromiseResolveBlock meetingPromiseResolve;
   RCTPromiseRejectBlock meetingPromiseReject;
+    RNZoomView* rnZoomView;
 }
 
 - (instancetype)init {
@@ -33,50 +35,24 @@
 
 RCT_EXPORT_MODULE()
 
-RCT_EXPORT_METHOD(
-  initialize: (NSString *)appKey
-  withAppSecret: (NSString *)appSecret
-  withWebDomain: (NSString *)webDomain
-  withResolve: (RCTPromiseResolveBlock)resolve
-  withReject: (RCTPromiseRejectBlock)reject
-)
+#pragma mark - Events
+
+RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock);
+
+#pragma mark - Lifecycle
+
+- (UIView *)view
 {
-  if (isInitialized) {
-    resolve(@"Already initialize Zoom SDK successfully.");
-    return;
-  }
+    rnZoomView = [[RNZoomView alloc] init];
+    [RNMeetingCenter shared].currentZoomView = rnZoomView;
+    return rnZoomView;
+}
 
-  isInitialized = true;
-
-  @try {
-    initializePromiseResolve = resolve;
-    initializePromiseReject = reject;
-    self.languageArray = [[MobileRTC sharedRTC] supportedLanguages];
-    [[MobileRTC sharedRTC] setLanguage:_languageArray[1]];
-    MobileRTCSDKInitContext *context = [[MobileRTCSDKInitContext alloc] init];
-    context.domain = webDomain;
-    context.enableLog = YES;
-    context.locale = MobileRTC_ZoomLocale_Default;
-
-    //Note: This step is optional, Method is uesd for iOS Replaykit Screen share integration,if not,just ignore this step.
-    // context.appGroupId = @"group.zoom.us.MobileRTCSampleExtensionReplayKit";
-    BOOL initializeSuc = [[MobileRTC sharedRTC] initialize:context];
-
-    MobileRTCAuthService *authService = [[MobileRTC sharedRTC] getAuthService];
-    if (authService)
-    {
-      authService.delegate = self;
-
-      authService.clientKey = appKey;
-      authService.clientSecret = appSecret;
-
-      [authService sdkAuth];
-    } else {
-      NSLog(@"onZoomSDKInitializeResult, no authService");
-    }
-  } @catch (NSError *ex) {
-      reject(@"ERR_UNEXPECTED_EXCEPTION", @"Executing initialize", ex);
-  }
+RCT_EXPORT_METHOD(initZoomSDK:(NSDictionary *) clientInfo)
+{
+    NSLog(@"csacas %@", clientInfo);
+  [[RNMeetingCenter shared] setClientInfo:clientInfo];
+  NSLog(@"onZoomSDKInitializeResult, no authService");
 }
 
 RCT_EXPORT_METHOD(
@@ -132,7 +108,6 @@ RCT_EXPORT_METHOD(
       MobileRTCMeetingJoinParam * joinParam = [[MobileRTCMeetingJoinParam alloc]init];
       joinParam.userName = displayName;
       joinParam.meetingNumber = meetingNo;
-//       joinParam.password = pwd;
 
       MobileRTCMeetError joinMeetingResult = [ms joinMeetingWithJoinParam:joinParam];
 
@@ -143,33 +118,9 @@ RCT_EXPORT_METHOD(
   }
 }
 
-RCT_EXPORT_METHOD(
-  joinMeetingWithPassword: (NSString *)displayName
-  withMeetingNo: (NSString *)meetingNo
-  withPassword: (NSString *)password
-  withResolve: (RCTPromiseResolveBlock)resolve
-  withReject: (RCTPromiseRejectBlock)reject
-)
+RCT_EXPORT_METHOD(joinMeetingWithPassword:(NSDictionary *) meetingInfo)
 {
-  @try {
-    meetingPromiseResolve = resolve;
-    meetingPromiseReject = reject;
-
-    MobileRTCMeetingService *ms = [[MobileRTC sharedRTC] getMeetingService];
-    if (ms) {
-      ms.delegate = self;
-
-      MobileRTCMeetingJoinParam * joinParam = [[MobileRTCMeetingJoinParam alloc]init];
-      joinParam.userName = displayName;
-      joinParam.meetingNumber = meetingNo;
-      joinParam.password = password;
-
-      MobileRTCMeetError joinMeetingResult = [ms joinMeetingWithJoinParam:joinParam];
-      NSLog(@"joinMeeting, joinMeetingResult=%d", joinMeetingResult);
-    }
-  } @catch (NSError *ex) {
-      reject(@"ERR_UNEXPECTED_EXCEPTION", @"Executing joinMeeting", ex);
-  }
+    [[RNMeetingCenter shared] joinMeeting:meetingInfo];
 }
 
 - (void)onMobileRTCAuthReturn:(MobileRTCAuthError)returnValue {
