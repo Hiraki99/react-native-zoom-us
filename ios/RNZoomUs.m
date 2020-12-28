@@ -38,13 +38,13 @@ RCT_EXPORT_MODULE()
 #pragma mark - Events
 
 RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock);
+RCT_EXPORT_VIEW_PROPERTY(userID, NSString);
 
 #pragma mark - Lifecycle
 
 - (UIView *)view
 {
     rnZoomView = [[RNZoomView alloc] init];
-    [RNMeetingCenter shared].currentZoomView = rnZoomView;
     return rnZoomView;
 }
 

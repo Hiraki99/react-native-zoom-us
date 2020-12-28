@@ -47,7 +47,7 @@ const RNZoomViewRef = (props, ref) => {
     },
   }));
 
-  return <NativeZoomView ref={nativeZoomViewRef} style={props.style} userID={this.props.userID || 'local_user'} />;
+  return <NativeZoomView ref={nativeZoomViewRef} style={props.style} userID={props.userID || 'local_user'} />;
 };
 
 const RNZoomView = React.forwardRef(RNZoomViewRef);
