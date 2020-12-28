@@ -6,13 +6,13 @@ Pod::Spec.new do |s|
   s.description  = <<-DESC
                   React Native integration for Zoom SDK
                    DESC
-  s.homepage     = "https://github.com/phu2810/react-native-zoom-us.git"
+  s.homepage     = "https://github.com/thinh185/react-native-zoom-us"
   s.license      = "MIT"
   # s.license      = { :type => "MIT", :file => "FILE_LICENSE" }
   s.author             = { "author" => "phunv" }
   s.platform     = :ios, "9.0"
 
-  s.source       = { :git => "https://github.com/phu2810/react-native-zoom-us.git" }
+  s.source       = { :git => "https://github.com/thinh185/react-native-zoom-us.git" }
   s.source_files  = "ios/*", "ios/src/**/*"
 
   s.requires_arc = false
