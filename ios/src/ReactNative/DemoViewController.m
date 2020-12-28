@@ -32,13 +32,7 @@
 }
 - (void) handleRightBarBtn {
     if (!self.rnZoomView) {
-        self.rnZoomView = [[RNZoomView alloc] init];
-        [self.rnZoomView setZoomInfo:@{
-            @"roomNumber": @"74756864905",
-            @"roomPassword": @"FanEL6",
-            @"userDisplayName": @"Phu2",
-            @"userPassword": @"123",
-        }];
+        self.rnZoomView = [[RNZoomView alloc] init];        
         [self.view addSubview:self.rnZoomView];
         self.rnZoomView.frame = self.view.bounds;
     }

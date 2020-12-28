@@ -8,6 +8,9 @@
 
 //  RCTCalendarModule.h
 #import <React/RCTBridgeModule.h>
+#import <React/RCTEventEmitter.h>
+#import "RNMeetingCenter.h"
 
-@interface RCTZoomModule : NSObject <RCTBridgeModule>
+@interface RCTZoomModule : RCTEventEmitter <RCTBridgeModule, MeetingDelegate>
+
 @end

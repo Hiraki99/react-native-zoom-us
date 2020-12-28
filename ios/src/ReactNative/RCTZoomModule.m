@@ -21,6 +21,7 @@ RCT_EXPORT_METHOD(initZoomSDK:(NSDictionary *) clientInfo)
 
 RCT_EXPORT_METHOD(joinMeeting:(NSDictionary *) meetingInfo)
 {
+    [RNMeetingCenter shared].currentMeetingDelegate = self;
     [[RNMeetingCenter shared] joinMeeting:meetingInfo];
 }
 
@@ -48,10 +49,124 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(getParticipants)
 {
     return [[RNMeetingCenter shared] getParticipants];
 }
-
+RCT_EXPORT_METHOD(startObserverEvent)
+{
+    [[RNMeetingCenter shared] startObserverEvent];
+}
+RCT_EXPORT_METHOD(stopObserverEvent)
+{
+    [[RNMeetingCenter shared] stopObserverEvent];
+}
 - (dispatch_queue_t)methodQueue
 {
     return dispatch_get_main_queue();
 }
+- (NSArray<NSString *> *)supportedEvents {
+    return @[@"onMeetingEvent"];
+}
 
+// Meeting delegate
+- (NSString *) convertStateToString: (MobileRTCMeetingState) state {
+    switch (state) {
+        case MobileRTCMeetingState_Idle:///<No meeting is running
+            return @"no_meeting_running";
+        case MobileRTCMeetingState_Connecting:///<Connect to the meeting server status
+            return @"connecting_meeting_server";
+        case MobileRTCMeetingState_WaitingForHost:///<Waiting for the host to start the meeting.
+            return @"waiting_host_start_meeting";
+        case MobileRTCMeetingState_InMeeting:///<Meeting is ready, in meeting status.
+            return @"meeting_ready";
+        case MobileRTCMeetingState_Disconnecting:///<Disconnect the meeting server, leave meeting status.
+            return @"disconnect_meeting server";
+        case MobileRTCMeetingState_Reconnecting:///<Reconnecting meeting server status.
+            return @"reconnecting_meeting_server";
+        case MobileRTCMeetingState_Failed:///<Failed to connect the meeting server.
+            return @"failed_connect_meeting_server";
+        case MobileRTCMeetingState_Ended:///<Meeting ends
+            return @"meeting_end";
+        case MobileRTCMeetingState_Unknow:///<Unknown status.
+            return @"unknown_status";
+        case MobileRTCMeetingState_Locked:///<Meeting is locked to prevent the further participants to join the meeting.
+            return @"meeting_locked_prevent_further_participants";
+        case MobileRTCMeetingState_Unlocked:///<Meeting is open and participants can join the meeting.
+            return @"meeting_open_participants_can_join";
+        case MobileRTCMeetingState_InWaitingRoom:///<Participants who join the meeting before the start are in the waiting room.
+            return @"in_waiting_room";
+        case MobileRTCMeetingState_WebinarPromote:///<Upgrade the attendees to panelist in webinar.
+            return @"upgrade_attendees_panelist";
+        case MobileRTCMeetingState_WebinarDePromote:///<Downgrade the attendees from the panelist.
+            return @"downgrade_attendees_panelist";
+        case MobileRTCMeetingState_JoinBO:///<Join the breakout room.
+            return @"join_breakout_room";
+        case MobileRTCMeetingState_LeaveBO:///<Leave the breakout room.
+            return @"leave_breakout_room";
+        case MobileRTCMeetingState_WaitingExternalSessionKey:///<Waiting for the additional secret key.
+            return @"waiting_additional_secret_key";
+    }
+    return @"unknown_status";
+}
+
+- (void)onMeetingStateChange:(MobileRTCMeetingState)state {
+    [self sendEvent:@"onMeetingEvent" body:@{@"event": @"meetingStateChange", @"state": @(state), @"des": [self convertStateToString:state]}];
+}
+
+- (void)onSinkMeetingActiveVideo:(NSUInteger)userID {
+    [self sendEvent:@"onMeetingEvent" body:@{@"event": @"sinkMeetingActiveVideo", @"userID": @(userID)}];
+}
+
+- (void)onSinkMeetingAudioStatusChange:(NSUInteger)userID {
+    [self sendEvent:@"onMeetingEvent" body:@{@"event": @"sinkMeetingAudioStatusChange", @"userID": @(userID)}];
+}
+
+- (void)onSinkMeetingMyAudioTypeChange {
+    [self sendEvent:@"onMeetingEvent" body:@{@"event": @"sinkMeetingMyAudioTypeChange"}];
+}
+
+- (void)onSinkMeetingVideoStatusChange:(NSUInteger)userID {
+    [self sendEvent:@"onMeetingEvent" body:@{@"event": @"sinkMeetingVideoStatusChange", @"userID": @(userID)}];
+}
+
+- (void)onMyVideoStateChange {
+    [self sendEvent:@"onMeetingEvent" body:@{@"event": @"myVideoStateChange"}];
+}
+
+- (void)onSinkMeetingUserJoin:(NSUInteger)userID {
+    [self sendEvent:@"onMeetingEvent" body:@{@"event": @"sinkMeetingUserJoin", @"userID": @(userID)}];
+}
+
+- (void)onSinkMeetingUserLeft:(NSUInteger)userID {
+    [self sendEvent:@"onMeetingEvent" body:@{@"event": @"sinkMeetingUserLeft", @"userID": @(userID)}];
+}
+
+- (void)onSinkMeetingActiveShare:(NSUInteger)userID {
+    [self sendEvent:@"onMeetingEvent" body:@{@"event": @"sinkMeetingActiveShare", @"userID": @(userID)}];
+}
+
+- (void)onSinkShareSizeChange:(NSUInteger)userID {
+    [self sendEvent:@"onMeetingEvent" body:@{@"event": @"sinkShareSizeChange", @"userID": @(userID)}];
+}
+
+- (void)onSinkMeetingShareReceiving:(NSUInteger)userID {
+    [self sendEvent:@"onMeetingEvent" body:@{@"event": @"sinkMeetingShareReceiving", @"userID": @(userID)}];
+}
+
+- (void)onWaitingRoomStatusChange:(BOOL)needWaiting {
+    [self sendEvent:@"onMeetingEvent" body:@{@"event": @"waitingRoomStatusChange", @"needWaiting": @(needWaiting)}];
+}
+
+- (void)onSinkMeetingPreviewStopped {
+    [self sendEvent:@"onMeetingEvent" body:@{@"event": @"sinkMeetingPreviewStopped"}];
+    
+    NSDictionary *userInfo = @{@"event": @"sinkMeetingPreviewStopped"};
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"onMeetingEvent"
+                                                        object:nil
+                                                      userInfo:userInfo];
+}
+
+- (void) sendEvent:(NSString *)eventName body:(NSDictionary *)bodyData
+{
+    if ([RNMeetingCenter shared].canSendEvent) {
+        [self sendEventWithName:eventName body:bodyData];
+    }
+}
 @end

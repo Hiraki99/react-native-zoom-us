@@ -9,6 +9,7 @@
 #import "SDKStartJoinMeetingPresenter+AudioServiceDelegate.h"
 #import "CustomMeetingViewController+MeetingDelegate.h"
 #import "RNZoomView+MeetingDelegate.h"
+#import "RNMeetingCenter.h"
 
 @implementation SDKStartJoinMeetingPresenter (AudioServiceDelegate)
 
@@ -23,6 +24,9 @@
     // Phunv: onSinkMeetingAudioStatusChange
     if (self.rnZoomView) {
         [self.rnZoomView onSinkMeetingAudioStatusChange:userID];
+    }
+    if ([RNMeetingCenter shared].currentMeetingDelegate) {
+        [[RNMeetingCenter shared].currentMeetingDelegate onSinkMeetingAudioStatusChange:userID];
     }
 }
 
@@ -41,6 +45,9 @@
     if (self.rnZoomView) {
         [self.rnZoomView onSinkMeetingMyAudioTypeChange];
     }
+    if ([RNMeetingCenter shared].currentMeetingDelegate) {
+        [[RNMeetingCenter shared].currentMeetingDelegate onSinkMeetingMyAudioTypeChange];
+    }
 }
 
 - (void)onMyAudioStateChange
@@ -52,6 +59,9 @@
     // Phunv: onSinkMeetingAudioStatusChange
     if (self.rnZoomView) {
         [self.rnZoomView onSinkMeetingAudioStatusChange:0];
+    }
+    if ([RNMeetingCenter shared].currentMeetingDelegate) {
+        [[RNMeetingCenter shared].currentMeetingDelegate onSinkMeetingAudioStatusChange:0];
     }
 }
 

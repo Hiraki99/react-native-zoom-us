@@ -12,8 +12,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RNMeetingView : UIView
 
-@property (strong, nonatomic) MobileRTCActiveVideoView * videoView;
+@property (nonatomic, strong) NSString *userID;
+@property (strong, nonatomic) MobileRTCActiveVideoView * activeVideoView;
+
 @property (strong, nonatomic) MobileRTCPreviewVideoView  * preVideoView;
+@property (strong, nonatomic) MobileRTCVideoView *videoView;
+
+- (void) handleEventPreviewStopped;
 
 @end
 

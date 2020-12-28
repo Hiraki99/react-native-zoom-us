@@ -33,46 +33,112 @@
     }
     return self;
 }
+- (void) setUserID:(NSString *)userID {
+    if (_videoView) {
+        [_videoView stopAttendeeVideo];
+        [_videoView removeFromSuperview];
+        _videoView = nil;
+    }
+    if (_preVideoView) {
+        [_preVideoView stopAttendeeVideo];
+        [_preVideoView removeFromSuperview];
+        _preVideoView = nil;
+    }
+    if (_activeVideoView) {
+        [_activeVideoView stopAttendeeVideo];
+        [_activeVideoView removeFromSuperview];
+        _activeVideoView = nil;
+    }
+    if ([userID isEqualToString:@"local_user"]) {
+        BOOL isJoined = NO;
+        if ([[MobileRTC sharedRTC] getMeetingService] && [[[MobileRTC sharedRTC] getMeetingService] myselfUserID] > 0) {
+            isJoined = YES;
+        }
+        if (!_videoView) {
+            [self addSubview:self.videoView];
+        }
+        if (!_preVideoView) {
+            [self addSubview:self.preVideoView];
+        }
+        [_videoView setHidden: isJoined ? NO : YES];
+        [_preVideoView setHidden: isJoined ? YES : NO];
+        [_videoView showAttendeeVideoWithUserID: [[[MobileRTC sharedRTC] getMeetingService] myselfUserID]];
+    }
+    else if ([userID isEqualToString:@"active_user"]) {
+        if (!_activeVideoView) {
+            [self addSubview:self.activeVideoView];
+        }
+    }
+    else {
+        NSCharacterSet* notDigits = [[NSCharacterSet decimalDigitCharacterSet] invertedSet];
+        if ([userID rangeOfCharacterFromSet:notDigits].location == NSNotFound)
+        {
+            if (!_videoView) {
+                NSUInteger userIDInt = [userID integerValue];
+                [self addSubview:self.videoView];
+                [_videoView showAttendeeVideoWithUserID:userIDInt];
+            }
+        }
+    }
+}
 - (void) commonInit {
-    [self addSubview:self.videoView];
-    [self addSubview:self.preVideoView];
 }
 
 - (void)layoutSubviews {
     [super layoutSubviews];
-    self.videoView.frame = self.bounds;
-    self.preVideoView.frame = [self previewFrame];
+    _videoView.frame = self.bounds;
+    _preVideoView.frame = self.bounds;
+    _activeVideoView.frame = self.bounds;
 }
-- (CGRect) previewFrame {
-    CGRect frame = self.bounds;
-    frame.origin.x = frame.size.width - frame.size.width/3;
-    frame.origin.y = 0;
-    frame.size.width = frame.size.width/3;
-    frame.size.height = frame.size.height/3;
-    return frame;
+
+- (MobileRTCActiveVideoView*)activeVideoView
+{
+    if (!_activeVideoView)
+    {
+        _activeVideoView = [[MobileRTCActiveVideoView alloc] initWithFrame:self.bounds];
+        [_activeVideoView setVideoAspect:MobileRTCVideoAspect_PanAndScan];
+    }
+    return _activeVideoView;
 }
-- (MobileRTCActiveVideoView*)videoView
+
+- (MobileRTCVideoView*)videoView
 {
     if (!_videoView)
     {
-        _videoView = [[MobileRTCActiveVideoView alloc] initWithFrame:self.bounds];
+        _videoView = [[MobileRTCVideoView alloc] initWithFrame:self.bounds];
         [_videoView setVideoAspect:MobileRTCVideoAspect_PanAndScan];
     }
     return _videoView;
 }
+
 - (MobileRTCPreviewVideoView*)preVideoView
 {
     if (!_preVideoView)
     {
-        _preVideoView = [[MobileRTCPreviewVideoView alloc] initWithFrame:[self previewFrame]];
+        _preVideoView = [[MobileRTCPreviewVideoView alloc] initWithFrame:self.bounds];
     }
     return _preVideoView;
 }
 - (void)dealloc {
-    [self.videoView removeFromSuperview];
-    [self.preVideoView removeFromSuperview];
-    self.videoView = nil;
-    self.preVideoView = nil;
-    [super dealloc];
+    [_videoView stopAttendeeVideo];
+    [_preVideoView stopAttendeeVideo];
+    [_activeVideoView stopAttendeeVideo];
+    
+    [_videoView removeFromSuperview];
+    [_preVideoView removeFromSuperview];
+    [_activeVideoView removeFromSuperview];
+    
+    _videoView = nil;
+    _preVideoView = nil;
+    _activeVideoView = nil;
 }
+
+- (void) handleEventPreviewStopped {
+    if ([[[MobileRTC sharedRTC] getMeetingService] myselfUserID] > 0) {
+        [_preVideoView setHidden:YES];
+        [_videoView setHidden:NO];
+        [_videoView showAttendeeVideoWithUserID: [[[MobileRTC sharedRTC] getMeetingService] myselfUserID]];
+    }
+}
+
 @end
