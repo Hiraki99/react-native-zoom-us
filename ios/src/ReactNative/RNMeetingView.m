@@ -7,6 +7,12 @@
 //
 
 #import "RNMeetingView.h"
+#import "RNMeetingCenter.h"
+
+@interface RNMeetingView() {
+    NSString *currentUserID;
+}
+@end
 
 @implementation RNMeetingView
 
@@ -34,6 +40,7 @@
     return self;
 }
 - (void) setUserID:(NSString *)userID {
+    currentUserID = userID;
     if (_videoView) {
         [_videoView stopAttendeeVideo];
         [_videoView removeFromSuperview];
@@ -48,6 +55,11 @@
         [_activeVideoView stopAttendeeVideo];
         [_activeVideoView removeFromSuperview];
         _activeVideoView = nil;
+    }
+    if (_activeShareView) {
+        [_activeShareView stopActiveShare];
+        [_activeShareView removeFromSuperview];
+        _activeShareView = nil;
     }
     if ([userID isEqualToString:@"local_user"]) {
         BOOL isJoined = NO;
@@ -68,6 +80,17 @@
         if (!_activeVideoView) {
             [self addSubview:self.activeVideoView];
         }
+        if (!_activeShareView) {
+            [self addSubview:self.activeShareView];
+        }
+        if ([RNMeetingCenter shared].currentActiveShareUser > 0) {
+            [_activeShareView setHidden:NO];
+            [_activeShareView showActiveShareWithUserID:[RNMeetingCenter shared].currentActiveShareUser];
+        }
+        else {
+            [_activeShareView setHidden:YES];
+            [_activeShareView stopActiveShare];
+        }
     }
     else {
         NSCharacterSet* notDigits = [[NSCharacterSet decimalDigitCharacterSet] invertedSet];
@@ -81,6 +104,7 @@
         }
     }
 }
+
 - (void) commonInit {
 }
 
@@ -89,8 +113,43 @@
     _videoView.frame = self.bounds;
     _preVideoView.frame = self.bounds;
     _activeVideoView.frame = self.bounds;
+    _activeShareView.frame = self.bounds;
 }
 
+- (void)dealloc {
+    [_videoView stopAttendeeVideo];
+    [_preVideoView stopAttendeeVideo];
+    [_activeVideoView stopAttendeeVideo];
+    [_activeShareView stopActiveShare];
+    
+    [_videoView removeFromSuperview];
+    [_preVideoView removeFromSuperview];
+    [_activeVideoView removeFromSuperview];
+    [_activeShareView removeFromSuperview];
+    
+    _videoView = nil;
+    _preVideoView = nil;
+    _activeVideoView = nil;
+    _activeShareView = nil;
+}
+
+- (void) handleEventPreviewStopped {
+    if ([[[MobileRTC sharedRTC] getMeetingService] myselfUserID] > 0) {
+        [_preVideoView setHidden:YES];
+        [_videoView setHidden:NO];
+        [_videoView showAttendeeVideoWithUserID: [[[MobileRTC sharedRTC] getMeetingService] myselfUserID]];
+    }
+}
+- (void) handleUserActiveShare: (NSNumber *) userID {
+    if (userID.integerValue > 0) {
+        [_activeShareView setHidden:NO];
+        [_activeShareView showActiveShareWithUserID:userID.integerValue];
+    }
+    else {
+        [_activeShareView stopActiveShare];
+        [_activeShareView setHidden:YES];
+    }
+}
 - (MobileRTCActiveVideoView*)activeVideoView
 {
     if (!_activeVideoView)
@@ -99,6 +158,15 @@
         [_activeVideoView setVideoAspect:MobileRTCVideoAspect_PanAndScan];
     }
     return _activeVideoView;
+}
+
+- (MobileRTCActiveShareView *) activeShareView {
+    if (!_activeShareView)
+    {
+        _activeShareView = [[MobileRTCActiveShareView alloc] initWithFrame:self.bounds];
+        [_activeShareView setVideoAspect:MobileRTCVideoAspect_PanAndScan];
+    }
+    return _activeShareView;
 }
 
 - (MobileRTCVideoView*)videoView
@@ -119,26 +187,4 @@
     }
     return _preVideoView;
 }
-- (void)dealloc {
-    [_videoView stopAttendeeVideo];
-    [_preVideoView stopAttendeeVideo];
-    [_activeVideoView stopAttendeeVideo];
-    
-    [_videoView removeFromSuperview];
-    [_preVideoView removeFromSuperview];
-    [_activeVideoView removeFromSuperview];
-    
-    _videoView = nil;
-    _preVideoView = nil;
-    _activeVideoView = nil;
-}
-
-- (void) handleEventPreviewStopped {
-    if ([[[MobileRTC sharedRTC] getMeetingService] myselfUserID] > 0) {
-        [_preVideoView setHidden:YES];
-        [_videoView setHidden:NO];
-        [_videoView showAttendeeVideoWithUserID: [[[MobileRTC sharedRTC] getMeetingService] myselfUserID]];
-    }
-}
-
 @end

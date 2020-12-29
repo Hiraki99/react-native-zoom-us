@@ -18,8 +18,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (strong, nonatomic) MobileRTCPreviewVideoView  * preVideoView;
 @property (strong, nonatomic) MobileRTCVideoView *videoView;
 
-- (void) handleEventPreviewStopped;
+@property (strong, nonatomic) MobileRTCActiveShareView *activeShareView;
 
+- (void) handleEventPreviewStopped;
+- (void) handleUserActiveShare: (NSNumber *) userID;
 @end
 
 NS_ASSUME_NONNULL_END

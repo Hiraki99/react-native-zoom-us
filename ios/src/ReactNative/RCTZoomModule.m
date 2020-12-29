@@ -75,6 +75,7 @@ RCT_EXPORT_METHOD(stopObserverEvent)
         case MobileRTCMeetingState_WaitingForHost:///<Waiting for the host to start the meeting.
             return @"waiting_host_start_meeting";
         case MobileRTCMeetingState_InMeeting:///<Meeting is ready, in meeting status.
+            [RNMeetingCenter shared].isJoinedRoom = YES;
             return @"meeting_ready";
         case MobileRTCMeetingState_Disconnecting:///<Disconnect the meeting server, leave meeting status.
             return @"disconnect_meeting server";
@@ -83,6 +84,8 @@ RCT_EXPORT_METHOD(stopObserverEvent)
         case MobileRTCMeetingState_Failed:///<Failed to connect the meeting server.
             return @"failed_connect_meeting_server";
         case MobileRTCMeetingState_Ended:///<Meeting ends
+            [RNMeetingCenter shared].isJoinedRoom = NO;
+            [RNMeetingCenter shared].currentActiveShareUser = 0;
             return @"meeting_end";
         case MobileRTCMeetingState_Unknow:///<Unknown status.
             return @"unknown_status";
@@ -140,6 +143,12 @@ RCT_EXPORT_METHOD(stopObserverEvent)
 
 - (void)onSinkMeetingActiveShare:(NSUInteger)userID {
     [self sendEvent:@"onMeetingEvent" body:@{@"event": @"sinkMeetingActiveShare", @"userID": @(userID)}];
+    
+    [RNMeetingCenter shared].currentActiveShareUser = userID;
+    NSDictionary *userInfo = @{@"event": @"onSinkMeetingActiveShare", @"userID": @(userID)};
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"onMeetingEvent"
+                                                        object:nil
+                                                      userInfo:userInfo];
 }
 
 - (void)onSinkShareSizeChange:(NSUInteger)userID {

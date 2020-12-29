@@ -47,6 +47,8 @@
     self = [super init];
     if (self) {
         self.canSendEvent = NO;
+        self.isJoinedRoom = NO;
+        self.currentActiveShareUser = 0;
     }
     return self;
 }
@@ -63,62 +65,6 @@
 }
 - (BOOL) isEnableRNMeetingView {
     return YES;
-}
-- (SDKInitPresenter *)setUpPresenter
-{
-    if (!_setUpPresenter)
-    {
-        _setUpPresenter = [[SDKInitPresenter alloc] init];
-    }
-    
-    return _setUpPresenter;
-}
-- (SDKAuthPresenter *)authPresenter
-{
-    if (!_authPresenter)
-    {
-        _authPresenter = [[SDKAuthPresenter alloc] init];
-    }
-    
-    return _authPresenter;
-}
-- (SDKStartJoinMeetingPresenter *)presenter
-{
-    if (!_presenter)
-    {
-        _presenter = [[SDKStartJoinMeetingPresenter alloc] init];
-    }
-    
-    return _presenter;
-}
-- (SDKAudioPresenter *)audioPresenter
-{
-    if (!_audioPresenter)
-    {
-        _audioPresenter = [[SDKAudioPresenter alloc] init];
-    }
-    
-    return _audioPresenter;
-}
-
-- (SDKVideoPresenter *)videoPresenter
-{
-    if (!_videoPresenter)
-    {
-        _videoPresenter = [[SDKVideoPresenter alloc] init];
-    }
-    
-    return _videoPresenter;
-}
-
-- (SDKActionPresenter *)actionPresenter
-{
-    if (!_actionPresenter)
-    {
-        _actionPresenter = [[SDKActionPresenter alloc] init];
-    }
-    
-    return _actionPresenter;
 }
 -(void)startObserverEvent {
     self.canSendEvent = YES;
@@ -176,6 +122,7 @@
     [ms leaveMeetingWithCmd:LeaveMeetingCmd_Leave];
     
     _meetingInfo = nil;
+    _isJoinedRoom = NO;
     NSDictionary *userInfo = @{@"event": @"endMeeting"};
     [[NSNotificationCenter defaultCenter] postNotificationName:@"onMeetingEvent"
                                                         object:nil
@@ -193,6 +140,63 @@
 - (NSArray *) getParticipants {
     MobileRTCMeetingService *ms = [[MobileRTC sharedRTC] getMeetingService];
     return [ms getInMeetingUserList];
+}
+
+- (SDKInitPresenter *)setUpPresenter
+{
+    if (!_setUpPresenter)
+    {
+        _setUpPresenter = [[SDKInitPresenter alloc] init];
+    }
+    
+    return _setUpPresenter;
+}
+- (SDKAuthPresenter *)authPresenter
+{
+    if (!_authPresenter)
+    {
+        _authPresenter = [[SDKAuthPresenter alloc] init];
+    }
+    
+    return _authPresenter;
+}
+- (SDKStartJoinMeetingPresenter *)presenter
+{
+    if (!_presenter)
+    {
+        _presenter = [[SDKStartJoinMeetingPresenter alloc] init];
+    }
+    
+    return _presenter;
+}
+- (SDKAudioPresenter *)audioPresenter
+{
+    if (!_audioPresenter)
+    {
+        _audioPresenter = [[SDKAudioPresenter alloc] init];
+    }
+    
+    return _audioPresenter;
+}
+
+- (SDKVideoPresenter *)videoPresenter
+{
+    if (!_videoPresenter)
+    {
+        _videoPresenter = [[SDKVideoPresenter alloc] init];
+    }
+    
+    return _videoPresenter;
+}
+
+- (SDKActionPresenter *)actionPresenter
+{
+    if (!_actionPresenter)
+    {
+        _actionPresenter = [[SDKActionPresenter alloc] init];
+    }
+    
+    return _actionPresenter;
 }
 @end
 

@@ -32,6 +32,11 @@
             if (_rnMeetingView) {
                 [_rnMeetingView setUserID: userID];
             }
+            else {
+                if ([RNMeetingCenter shared].isJoinedRoom) {
+                    [self createMeetingView];
+                }
+            }
         }
     }
 }
@@ -72,6 +77,12 @@
             if (_rnMeetingView) {
                 [_rnMeetingView removeFromSuperview];
                 _rnMeetingView = nil;
+            }
+        }
+        if ([event isEqualToString:@"onSinkMeetingActiveShare"]) {
+            if (_rnMeetingView) {
+                NSNumber *userID = userInfo[@"userID"];
+                [_rnMeetingView handleUserActiveShare: userID];
             }
         }
     }
