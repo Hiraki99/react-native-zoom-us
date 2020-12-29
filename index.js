@@ -1,55 +1,55 @@
-/**
- * Created by juanjimenez on 07/12/2016.
- * Otomogroove ltd 2017
- */
-
 'use strict';
-import React, {forwardRef, PureComponent, useImperativeHandle} from 'react';
-import {requireNativeComponent, UIManager, findNodeHandle} from 'react-native';
-const NativeZoomView = requireNativeComponent('RNZoomUs', RNZoomView);
+import React, {useImperativeHandle} from 'react';
+import PropTypes from 'prop-types';
+import {
+  requireNativeComponent,
+  NativeModules,
+  // Animated,
+  // PanResponder,
+} from 'react-native';
+const NativeZoomView = requireNativeComponent('RNZoomView', RNZoomViewRef);
 
-const config = {
-  zoom: {
-    appKey: 'fWBEHJbyD7SHbkTcX4LnfMVMkMV6biVtWDor', // TODO: appKey
-    appSecret: 'TfuTLZCeeFhbwSuuq95gIQvVkxWyxyDJbhgX', // TODO appSecret
-    domain: 'zoom.us',
-  },
-};
+const {ZoomModule} = NativeModules;
 
 const RNZoomViewRef = (props, ref) => {
   const nativeZoomViewRef = React.useRef();
-
   const joinMeetingWithPassword = React.useCallback((data) => {
-    UIManager.dispatchViewManagerCommand(
-      findNodeHandle(nativeZoomViewRef),
-      UIManager.RNZoomUs.Commands.initZoomSDK,
-      [data],
-    );
+    ZoomModule.joinMeeting(data);
   }, []);
 
   React.useEffect(() => {
-    UIManager.dispatchViewManagerCommand(
-      nativeZoomViewRef,
-      UIManager.RNZoomUs.Commands.initZoomSDK,
-      [
-        {
-          domain: 'zoom.us',
-          clientKey: 'yaEkS5rguwHNuFvqOsDh8VMvZOkRSNEMJpjn',
-          clientSecret: 'ngtmOzHAu0FwI55Faoe0AD3tVm86D3XfkzTj',
-        },
-      ],
-    );
+    ZoomModule.initZoomSDK({
+      domain: 'zoom.us',
+      clientKey: 'yaEkS5rguwHNuFvqOsDh8VMvZOkRSNEMJpjn',
+      clientSecret: 'ngtmOzHAu0FwI55Faoe0AD3tVm86D3XfkzTj',
+    });
+    return () => {
+      ZoomModule.leaveCurrentMeeting();
+    };
   }, []);
 
   useImperativeHandle(ref, () => ({
     joinMeetingWithPassword: (data) => {
       joinMeetingWithPassword(data);
     },
+    leaveCurrentMeeting: () => {
+      ZoomModule.leaveCurrentMeeting();
+    },
   }));
 
-  return <NativeZoomView ref={nativeZoomViewRef} style={props.style} />;
+  return <NativeZoomView ref={nativeZoomViewRef} style={{flex: 1}} />;
 };
 
 const RNZoomView = React.forwardRef(RNZoomViewRef);
+
+RNZoomView.propTypes = {
+  // showOption: PropTypes.bool,
+  // setShowOption: PropTypes.bool,
+};
+
+RNZoomView.defaultProps = {
+  // showOption: false,
+  // setShowOption: () => {},
+};
 
 export default RNZoomView;

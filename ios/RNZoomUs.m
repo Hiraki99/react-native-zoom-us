@@ -9,7 +9,7 @@
   RCTPromiseRejectBlock initializePromiseReject;
   RCTPromiseResolveBlock meetingPromiseResolve;
   RCTPromiseRejectBlock meetingPromiseReject;
-    RNZoomView* rnZoomView;
+//  RNZoomView* rnZoomView;
 }
 
 - (instancetype)init {
@@ -43,7 +43,7 @@ RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock);
 
 - (UIView *)view
 {
-    rnZoomView = [[RNZoomView alloc] init];
+    RNZoomView* rnZoomView = [[RNZoomView alloc] init];
     [RNMeetingCenter shared].currentZoomView = rnZoomView;
     return rnZoomView;
 }
