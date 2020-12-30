@@ -38,6 +38,7 @@ const RNZoomViewRef = (props, ref) => {
   }, [onEvent]);
 
   const joinMeetingWithPassword = React.useCallback((data) => {
+    console.log('data ', data);
     ZoomModule.joinMeeting(data);
   }, []);
 
