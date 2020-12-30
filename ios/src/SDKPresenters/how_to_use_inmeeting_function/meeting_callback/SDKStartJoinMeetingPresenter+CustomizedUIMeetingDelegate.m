@@ -18,7 +18,10 @@
     NSLog(@"onInitMeetingView....");
     // Phunv: Su kien bat dau setup UI cua meetingRoom => Tai day khoi tao RNMeetingView va gan vao root view
     if ([[RNMeetingCenter shared] isEnableRNMeetingView]) {
-        [self.rnZoomView createMeetingView];
+        NSDictionary *userInfo = @{@"event": @"initMeetingView"};
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"onMeetingEvent"
+                                                            object:nil
+                                                          userInfo:userInfo];
     }
     else {
         BOOL enbleRawdataUI = [[NSUserDefaults standardUserDefaults] boolForKey:Raw_Data_UI_Enable];

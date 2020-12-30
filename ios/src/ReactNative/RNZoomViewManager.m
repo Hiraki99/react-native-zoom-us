@@ -13,10 +13,11 @@
 
 @implementation RNZoomViewManager
 
+RCT_EXPORT_VIEW_PROPERTY(userID, NSString);
+
 - (UIView *)view
 {
     RNZoomView *rnZoomView = [[RNZoomView alloc] init];
-    [RNMeetingCenter shared].currentZoomView = rnZoomView;
     return rnZoomView;
 }
 RCT_EXPORT_MODULE();

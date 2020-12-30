@@ -9,6 +9,7 @@
 #import "SDKStartJoinMeetingPresenter+UserServiceDelegate.h"
 #import "CustomMeetingViewController+MeetingDelegate.h"
 #import "RNZoomView+MeetingDelegate.h"
+#import "RNMeetingCenter.h"
 
 @implementation SDKStartJoinMeetingPresenter (UserServiceDelegate)
 
@@ -24,6 +25,9 @@
     if (self.rnZoomView) {
         [self.rnZoomView onSinkMeetingUserJoin: userID];
     }
+    if ([RNMeetingCenter shared].currentMeetingDelegate) {
+        [[RNMeetingCenter shared].currentMeetingDelegate onSinkMeetingUserJoin: userID];
+    }
 }
 
 - (void)onSinkMeetingUserLeft:(NSUInteger)userID
@@ -38,6 +42,9 @@
     // Phunv: onSinkMeetingUserLeft
     if (self.rnZoomView) {
         [self.rnZoomView onSinkMeetingUserLeft:userID];
+    }
+    if ([RNMeetingCenter shared].currentMeetingDelegate) {
+        [[RNMeetingCenter shared].currentMeetingDelegate onSinkMeetingUserLeft:userID];
     }
 }
 

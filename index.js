@@ -4,18 +4,17 @@ import PropTypes from 'prop-types';
 import {
   requireNativeComponent,
   NativeModules,
+  NativeEventEmitter,
   // Animated,
   // PanResponder,
 } from 'react-native';
 const NativeZoomView = requireNativeComponent('RNZoomView', RNZoomViewRef);
-
 const {ZoomModule} = NativeModules;
+const eventEmitter = new NativeEventEmitter(ZoomModule);
 
 const RNZoomViewRef = (props, ref) => {
+  const {onEvent} = props;
   const nativeZoomViewRef = React.useRef();
-  const joinMeetingWithPassword = React.useCallback((data) => {
-    ZoomModule.joinMeeting(data);
-  }, []);
 
   React.useEffect(() => {
     ZoomModule.initZoomSDK({
@@ -23,9 +22,23 @@ const RNZoomViewRef = (props, ref) => {
       clientKey: 'yaEkS5rguwHNuFvqOsDh8VMvZOkRSNEMJpjn',
       clientSecret: 'ngtmOzHAu0FwI55Faoe0AD3tVm86D3XfkzTj',
     });
+  }, []);
+
+  React.useEffect(() => {
+    const subscriptionEvent = eventEmitter.addListener(
+      'onMeetingEvent',
+      onEvent,
+    );
+    ZoomModule.startObserverEvent();
+
     return () => {
-      ZoomModule.leaveCurrentMeeting();
+      subscriptionEvent.remove();
+      ZoomModule.stopObserverEvent();
     };
+  }, [onEvent]);
+
+  const joinMeetingWithPassword = React.useCallback((data) => {
+    ZoomModule.joinMeeting(data);
   }, []);
 
   useImperativeHandle(ref, () => ({
@@ -35,21 +48,37 @@ const RNZoomViewRef = (props, ref) => {
     leaveCurrentMeeting: () => {
       ZoomModule.leaveCurrentMeeting();
     },
+    audio: () => {
+      ZoomModule.onOffMyAudio();
+    },
+    video: () => {
+      ZoomModule.onOffMyVideo();
+    },
+    switchCamera: () => {
+      ZoomModule.switchMyCamera();
+    },
+    getParticipants: () => {
+      ZoomModule.getParticipants();
+    },
   }));
 
-  return <NativeZoomView ref={nativeZoomViewRef} style={{flex: 1}} />;
+  return (
+    <NativeZoomView
+      ref={nativeZoomViewRef}
+      style={props.style}
+      userID={props.userID || 'local_user'}
+    />
+  );
 };
 
 const RNZoomView = React.forwardRef(RNZoomViewRef);
 
 RNZoomView.propTypes = {
-  // showOption: PropTypes.bool,
-  // setShowOption: PropTypes.bool,
+  onEvent: PropTypes.func,
 };
 
 RNZoomView.defaultProps = {
-  // showOption: false,
-  // setShowOption: () => {},
+  onEvent: () => {},
 };
 
 export default RNZoomView;

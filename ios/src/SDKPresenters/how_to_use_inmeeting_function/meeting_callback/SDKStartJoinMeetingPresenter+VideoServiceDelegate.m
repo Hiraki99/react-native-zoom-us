@@ -9,6 +9,7 @@
 #import "SDKStartJoinMeetingPresenter+VideoServiceDelegate.h"
 #import "CustomMeetingViewController+MeetingDelegate.h"
 #import "RNZoomView+MeetingDelegate.h"
+#import "RNMeetingCenter.h"
 
 @implementation SDKStartJoinMeetingPresenter (VideoServiceDelegate)
 
@@ -24,6 +25,9 @@
     if (self.rnZoomView) {
         [self.rnZoomView onSinkMeetingActiveVideo:userID];
     }
+    if ([RNMeetingCenter shared].currentMeetingDelegate) {
+        [[RNMeetingCenter shared].currentMeetingDelegate onSinkMeetingActiveVideo:userID];
+    }
 }
 
 - (void)onSinkMeetingPreviewStopped
@@ -35,6 +39,9 @@
     // Phunv: onSinkMeetingPreviewStopped
     if (self.rnZoomView) {
         [self.rnZoomView onSinkMeetingPreviewStopped];
+    }
+    if ([RNMeetingCenter shared].currentMeetingDelegate) {
+        [[RNMeetingCenter shared].currentMeetingDelegate onSinkMeetingPreviewStopped];
     }
 }
 
@@ -48,6 +55,9 @@
     // Phunv: onSinkMeetingVideoStatusChange
     if (self.rnZoomView) {
         [self.rnZoomView onSinkMeetingVideoStatusChange:userID];
+    }
+    if ([RNMeetingCenter shared].currentMeetingDelegate) {
+        [[RNMeetingCenter shared].currentMeetingDelegate onSinkMeetingVideoStatusChange:userID];
     }
 }
 
@@ -65,6 +75,9 @@
     // Phunv: onMyVideoStateChange
     if (self.rnZoomView) {
         [self.rnZoomView onMyVideoStateChange];
+    }
+    if ([RNMeetingCenter shared].currentMeetingDelegate) {
+        [[RNMeetingCenter shared].currentMeetingDelegate onMyVideoStateChange];
     }
 }
 

@@ -9,7 +9,7 @@
   RCTPromiseRejectBlock initializePromiseReject;
   RCTPromiseResolveBlock meetingPromiseResolve;
   RCTPromiseRejectBlock meetingPromiseReject;
-//  RNZoomView* rnZoomView;
+    RNZoomView* rnZoomView;
 }
 
 - (instancetype)init {
@@ -38,13 +38,13 @@ RCT_EXPORT_MODULE()
 #pragma mark - Events
 
 RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock);
+RCT_EXPORT_VIEW_PROPERTY(userID, NSString);
 
 #pragma mark - Lifecycle
 
 - (UIView *)view
 {
-    RNZoomView* rnZoomView = [[RNZoomView alloc] init];
-    [RNMeetingCenter shared].currentZoomView = rnZoomView;
+    rnZoomView = [[RNZoomView alloc] init];
     return rnZoomView;
 }
 

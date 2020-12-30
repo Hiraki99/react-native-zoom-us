@@ -27,7 +27,7 @@
 {
     // Phunv: Su kien sau khi join phong => Nhap displayname + password => Skip buoc nay cho nguoi dung
     if ([[RNMeetingCenter shared] isEnableRNMeetingView]) {
-        [self.rnZoomView joinRoomWithUserInfo:completion];
+        [[RNMeetingCenter shared] joinRoomWithUserInfo:completion];
     }
     else {
         if (self.mainVC) {
@@ -47,6 +47,9 @@
     if (self.rnZoomView)
     {
         [self.rnZoomView onWaitingRoomStatusChange:needWaiting];
+    }
+    if ([RNMeetingCenter shared].currentMeetingDelegate) {
+        [[RNMeetingCenter shared].currentMeetingDelegate onWaitingRoomStatusChange:needWaiting];
     }
 }
 
@@ -84,6 +87,9 @@
     // Phunv: onMeetingStateChange
     if (self.rnZoomView) {
         [self.rnZoomView onMeetingStateChange:state];
+    }
+    if ([RNMeetingCenter shared].currentMeetingDelegate) {
+        [[RNMeetingCenter shared].currentMeetingDelegate onMeetingStateChange:state];
     }
 }
 

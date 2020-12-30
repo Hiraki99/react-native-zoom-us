@@ -42,6 +42,14 @@
     });
     return sharedInstance;
 }
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        self.canSendEvent = NO;
+    }
+    return self;
+}
 - (void) setClientInfo:(NSDictionary *) clientInfo {
     if (!self.zoomClientInfo) {
         self.zoomClientInfo = [[NSDictionary alloc] initWithDictionary:clientInfo];
@@ -112,10 +120,18 @@
     
     return _actionPresenter;
 }
-
+-(void)startObserverEvent {
+    self.canSendEvent = YES;
+}
+-(void)stopObserverEvent {
+    self.canSendEvent = NO;
+}
 - (void) joinMeeting:(NSDictionary *) meetingInfo {
-    if (self.currentZoomView) {
-        [self.currentZoomView setZoomInfo:meetingInfo];
+    if (!_meetingInfo) {
+        _meetingInfo = [[NSDictionary alloc] initWithDictionary:meetingInfo];
+        NSString *roomNumber = self.meetingInfo[@"roomNumber"] ?: @"";
+        NSString *roomPassword = self.meetingInfo[@"roomPassword"] ?: @"";
+        [self joinMeeting:roomNumber withPassword:roomPassword rnZoomView:nil];
     }
 }
 - (void)joinMeeting:(NSString*)meetingNo withPassword:(NSString*)pwd rnZoomView:(id)rnZoomView
@@ -147,10 +163,23 @@
         }
     }
 }
+- (void) joinRoomWithUserInfo:(void (^)(NSString *displayName, NSString *password, BOOL cancel))completion {
+    if (self.meetingInfo) {
+        NSString *userDisplayName = self.meetingInfo[@"userDisplayName"] ?: @"";
+        NSString *userPassword = self.meetingInfo[@"userPassword"] ?: @"";
+        completion(userDisplayName, userPassword, NO);
+    }
+}
 - (void) leaveCurrentMeeting {
     MobileRTCMeetingService *ms = [[MobileRTC sharedRTC] getMeetingService];
     if (!ms) return;
     [ms leaveMeetingWithCmd:LeaveMeetingCmd_Leave];
+    
+    _meetingInfo = nil;
+    NSDictionary *userInfo = @{@"event": @"endMeeting"};
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"onMeetingEvent"
+                                                        object:nil
+                                                      userInfo:userInfo];
 }
 - (void) onOffMyAudio {
     [self.audioPresenter muteMyAudio];

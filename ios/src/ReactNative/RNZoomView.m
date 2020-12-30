@@ -17,26 +17,23 @@
 
 @implementation RNZoomView
 
--(void)reactSetFrame:(CGRect)frame{
+- (void) reactSetFrame:(CGRect)frame{
     self.frame=frame;
 }
 
-- (void) setZoomInfo:(NSDictionary *) zoomInfo {
-    if (!self.zoomDic) {
-        self.zoomDic = [[NSDictionary alloc] initWithDictionary:zoomInfo];
-        [self startJoinRoom];
+- (void) setUserID:(NSString *)userID {
+    if (userID && userID.length > 0) {
+        BOOL hasChange = YES;
+        if (_userID && [_userID isEqualToString:userID]) {
+            hasChange = NO;
+        }
+        if (hasChange) {
+            _userID = userID;
+            if (_rnMeetingView) {
+                [_rnMeetingView setUserID: userID];
+            }
+        }
     }
-}
-
-- (void) startJoinRoom {
-    NSString *roomNumber = self.zoomDic[@"roomNumber"] ?: @"";
-    NSString *roomPassword = self.zoomDic[@"roomPassword"] ?: @"";
-    [[RNMeetingCenter shared] joinMeeting:roomNumber withPassword:roomPassword rnZoomView:self];
-}
-- (void) joinRoomWithUserInfo:(void (^)(NSString *displayName, NSString *password, BOOL cancel))completion {
-    NSString *userDisplayName = self.zoomDic[@"userDisplayName"] ?: @"";
-    NSString *userPassword = self.zoomDic[@"userPassword"] ?: @"";
-    completion(userDisplayName, userPassword, NO);
 }
 - (instancetype)initWithCoder:(NSCoder *)coder
 {
@@ -55,16 +52,47 @@
     return self;
 }
 - (void) commonInit {
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handleMeetingEvent:)
+                                                 name:@"onMeetingEvent"
+                                               object:nil];
+}
+- (void) handleMeetingEvent:(NSNotification *) notification
+{
+    if ([[notification name] isEqualToString:@"onMeetingEvent"]) {
+        NSDictionary *userInfo = notification.userInfo;
+        NSString *event = userInfo[@"event"];
+        if ([event isEqualToString:@"sinkMeetingPreviewStopped"]) {
+            [self handleEventPreviewStopped];
+        }
+        if ([event isEqualToString:@"initMeetingView"]) {
+            [self createMeetingView];
+        }
+        if ([event isEqualToString:@"endMeeting"]) {
+            if (_rnMeetingView) {
+                [_rnMeetingView removeFromSuperview];
+                _rnMeetingView = nil;
+            }
+        }
+    }
 }
 - (void) createMeetingView {
-    if (!self.rnMeetingView) {
-        self.rnMeetingView = [[RNMeetingView alloc] initWithFrame:self.bounds];
-        [self addSubview:self.rnMeetingView];
+    if (!_rnMeetingView) {
+        _rnMeetingView = [[RNMeetingView alloc] initWithFrame:self.bounds];
+        [_rnMeetingView setUserID:_userID];
+        [self addSubview:_rnMeetingView];
     }
 }
 - (void)layoutSubviews {
     [super layoutSubviews];
-    self.rnMeetingView.frame = self.bounds;
+    _rnMeetingView.frame = self.bounds;
 }
-
+- (void) handleEventPreviewStopped {
+    [_rnMeetingView handleEventPreviewStopped];
+}
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [_rnMeetingView removeFromSuperview];
+    _rnMeetingView = nil;
+}
 @end

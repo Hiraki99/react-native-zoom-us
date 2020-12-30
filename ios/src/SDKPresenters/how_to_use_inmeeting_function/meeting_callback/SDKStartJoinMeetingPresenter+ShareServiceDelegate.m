@@ -10,6 +10,7 @@
 #import "CustomMeetingViewController+MeetingDelegate.h"
 #import "MainViewController+MeetingDelegate.h"
 #import "RNZoomView+MeetingDelegate.h"
+#import "RNMeetingCenter.h"
 
 @implementation SDKStartJoinMeetingPresenter (ShareServiceDelegate)
 
@@ -23,6 +24,9 @@
     if (self.rnZoomView) {
         [self.rnZoomView onSinkMeetingActiveShare:userID];
     }
+    if ([RNMeetingCenter shared].currentMeetingDelegate) {
+        [[RNMeetingCenter shared].currentMeetingDelegate onSinkMeetingActiveShare:userID];
+    }
 }
 
 - (void)onSinkShareSizeChange:(NSUInteger)userID
@@ -35,6 +39,9 @@
     if (self.rnZoomView) {
         [self.rnZoomView onSinkShareSizeChange:userID];
     }
+    if ([RNMeetingCenter shared].currentMeetingDelegate) {
+        [[RNMeetingCenter shared].currentMeetingDelegate onSinkShareSizeChange:userID];
+    }
 }
 
 - (void)onSinkMeetingShareReceiving:(NSUInteger)userID
@@ -46,6 +53,9 @@
     // Phunv: onSinkMeetingShareReceiving
     if (self.rnZoomView) {
         [self.rnZoomView onSinkMeetingShareReceiving:userID];
+    }
+    if ([RNMeetingCenter shared].currentMeetingDelegate) {
+        [[RNMeetingCenter shared].currentMeetingDelegate onSinkMeetingShareReceiving:userID];
     }
 }
 
