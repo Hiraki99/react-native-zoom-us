@@ -91,6 +91,7 @@ RCT_EXPORT_METHOD(stopObserverEvent)
         case MobileRTCMeetingState_Ended:///<Meeting ends
             [RNMeetingCenter shared].isJoinedRoom = NO;
             [RNMeetingCenter shared].currentActiveShareUser = 0;
+            [RNMeetingCenter shared].currentActiveVideoUser = 0;
             return @"meeting_end";
         case MobileRTCMeetingState_Unknow:///<Unknown status.
             return @"unknown_status";
@@ -119,6 +120,7 @@ RCT_EXPORT_METHOD(stopObserverEvent)
 }
 
 - (void)onSinkMeetingActiveVideo:(NSUInteger)userID {
+    [RNMeetingCenter shared].currentActiveVideoUser = userID;
     MobileRTCMeetingUserInfo *userInfo = [[[MobileRTC sharedRTC] getMeetingService] userInfoByID:userID];
     [self sendEvent:@"onMeetingEvent" body:@{@"event": @"sinkMeetingActiveVideo", @"userID": @(userID), @"userName": userInfo.userName ?: @""}];
 }

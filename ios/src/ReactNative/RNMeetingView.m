@@ -79,6 +79,9 @@
     else if ([userID isEqualToString:@"active_user"]) {
         if (!_activeVideoView) {
             [self addSubview:self.activeVideoView];
+            if ([RNMeetingCenter shared].currentActiveVideoUser > 0) {
+                [_activeVideoView showAttendeeVideoWithUserID:[RNMeetingCenter shared].currentActiveVideoUser];
+            }
         }
         if (!_activeShareView) {
             [self addSubview:self.activeShareView];
