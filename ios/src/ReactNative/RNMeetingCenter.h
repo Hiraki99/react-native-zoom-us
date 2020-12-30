@@ -55,6 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign) BOOL isJoinedRoom;
 @property (nonatomic, assign) NSUInteger currentActiveShareUser;
+@property (nonatomic, assign) NSUInteger currentActiveVideoUser;
 
 - (void) startObserverEvent;
 - (void) stopObserverEvent;

@@ -49,6 +49,7 @@
         self.canSendEvent = NO;
         self.isJoinedRoom = NO;
         self.currentActiveShareUser = 0;
+        self.currentActiveVideoUser = 0;
     }
     return self;
 }
