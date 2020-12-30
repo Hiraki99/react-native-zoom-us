@@ -7,6 +7,7 @@
 //
 
 #import "SDKStartJoinMeetingPresenter+JoinMeetingOnly.h"
+#import "RNMeetingCenter.h"
 
 @implementation SDKStartJoinMeetingPresenter (JoinMeetingOnly)
 
@@ -26,7 +27,9 @@
         
         //For Join a meeting with password
         MobileRTCMeetingJoinParam * joinParam = [[[MobileRTCMeetingJoinParam alloc]init]autorelease];
-        joinParam.userName = kSDKUserName;
+        // Phunv: truyen param username
+        NSString *userName = [RNMeetingCenter shared].meetingInfo ? ([RNMeetingCenter shared].meetingInfo[@"userName"] ?: @"") : @"";
+        joinParam.userName = userName;
         joinParam.meetingNumber = meetingNo;
         joinParam.password = pwd;
 //        joinParam.zak = kZAK;

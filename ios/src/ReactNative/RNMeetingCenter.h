@@ -53,6 +53,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSDictionary *meetingInfo;
 @property (nonatomic, weak) id<MeetingDelegate> currentMeetingDelegate;
 
+@property (nonatomic, assign) BOOL isJoinedRoom;
+@property (nonatomic, assign) NSUInteger currentActiveShareUser;
+
 - (void) startObserverEvent;
 - (void) stopObserverEvent;
 - (void) setClientInfo:(NSDictionary *) clientInfo;

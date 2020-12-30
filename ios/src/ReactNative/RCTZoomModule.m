@@ -47,7 +47,12 @@ RCT_EXPORT_METHOD(switchMyCamera)
 
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(getParticipants)
 {
-    return [[RNMeetingCenter shared] getParticipants];
+    NSMutableArray *listUsers = [NSMutableArray new];
+    for (NSNumber *userId in [[RNMeetingCenter shared] getParticipants]) {
+        MobileRTCMeetingUserInfo *userInfo = [[[MobileRTC sharedRTC] getMeetingService] userInfoByID:userId.integerValue];
+        [listUsers addObject:@{@"userID": userId, @"userName": userInfo.userName}];
+    }
+    return listUsers;
 }
 RCT_EXPORT_METHOD(startObserverEvent)
 {
@@ -75,6 +80,7 @@ RCT_EXPORT_METHOD(stopObserverEvent)
         case MobileRTCMeetingState_WaitingForHost:///<Waiting for the host to start the meeting.
             return @"waiting_host_start_meeting";
         case MobileRTCMeetingState_InMeeting:///<Meeting is ready, in meeting status.
+            [RNMeetingCenter shared].isJoinedRoom = YES;
             return @"meeting_ready";
         case MobileRTCMeetingState_Disconnecting:///<Disconnect the meeting server, leave meeting status.
             return @"disconnect_meeting server";
@@ -83,6 +89,8 @@ RCT_EXPORT_METHOD(stopObserverEvent)
         case MobileRTCMeetingState_Failed:///<Failed to connect the meeting server.
             return @"failed_connect_meeting_server";
         case MobileRTCMeetingState_Ended:///<Meeting ends
+            [RNMeetingCenter shared].isJoinedRoom = NO;
+            [RNMeetingCenter shared].currentActiveShareUser = 0;
             return @"meeting_end";
         case MobileRTCMeetingState_Unknow:///<Unknown status.
             return @"unknown_status";
@@ -111,11 +119,13 @@ RCT_EXPORT_METHOD(stopObserverEvent)
 }
 
 - (void)onSinkMeetingActiveVideo:(NSUInteger)userID {
-    [self sendEvent:@"onMeetingEvent" body:@{@"event": @"sinkMeetingActiveVideo", @"userID": @(userID)}];
+    MobileRTCMeetingUserInfo *userInfo = [[[MobileRTC sharedRTC] getMeetingService] userInfoByID:userID];
+    [self sendEvent:@"onMeetingEvent" body:@{@"event": @"sinkMeetingActiveVideo", @"userID": @(userID), @"userName": userInfo.userName}];
 }
 
 - (void)onSinkMeetingAudioStatusChange:(NSUInteger)userID {
-    [self sendEvent:@"onMeetingEvent" body:@{@"event": @"sinkMeetingAudioStatusChange", @"userID": @(userID)}];
+    MobileRTCMeetingUserInfo *userInfo = [[[MobileRTC sharedRTC] getMeetingService] userInfoByID:userID];
+    [self sendEvent:@"onMeetingEvent" body:@{@"event": @"sinkMeetingAudioStatusChange", @"userID": @(userID), @"userName": userInfo.userName}];
 }
 
 - (void)onSinkMeetingMyAudioTypeChange {
@@ -123,7 +133,8 @@ RCT_EXPORT_METHOD(stopObserverEvent)
 }
 
 - (void)onSinkMeetingVideoStatusChange:(NSUInteger)userID {
-    [self sendEvent:@"onMeetingEvent" body:@{@"event": @"sinkMeetingVideoStatusChange", @"userID": @(userID)}];
+    MobileRTCMeetingUserInfo *userInfo = [[[MobileRTC sharedRTC] getMeetingService] userInfoByID:userID];
+    [self sendEvent:@"onMeetingEvent" body:@{@"event": @"sinkMeetingVideoStatusChange", @"userID": @(userID), @"userName": userInfo.userName}];
 }
 
 - (void)onMyVideoStateChange {
@@ -131,23 +142,34 @@ RCT_EXPORT_METHOD(stopObserverEvent)
 }
 
 - (void)onSinkMeetingUserJoin:(NSUInteger)userID {
-    [self sendEvent:@"onMeetingEvent" body:@{@"event": @"sinkMeetingUserJoin", @"userID": @(userID)}];
+    MobileRTCMeetingUserInfo *userInfo = [[[MobileRTC sharedRTC] getMeetingService] userInfoByID:userID];
+    [self sendEvent:@"onMeetingEvent" body:@{@"event": @"sinkMeetingUserJoin", @"userID": @(userID), @"userName": userInfo.userName}];
 }
 
 - (void)onSinkMeetingUserLeft:(NSUInteger)userID {
-    [self sendEvent:@"onMeetingEvent" body:@{@"event": @"sinkMeetingUserLeft", @"userID": @(userID)}];
+    MobileRTCMeetingUserInfo *userInfo = [[[MobileRTC sharedRTC] getMeetingService] userInfoByID:userID];
+    [self sendEvent:@"onMeetingEvent" body:@{@"event": @"sinkMeetingUserLeft", @"userID": @(userID), @"userName": userInfo.userName}];
 }
 
 - (void)onSinkMeetingActiveShare:(NSUInteger)userID {
-    [self sendEvent:@"onMeetingEvent" body:@{@"event": @"sinkMeetingActiveShare", @"userID": @(userID)}];
+    MobileRTCMeetingUserInfo *userInfo = [[[MobileRTC sharedRTC] getMeetingService] userInfoByID:userID];
+    [self sendEvent:@"onMeetingEvent" body:@{@"event": @"sinkMeetingActiveShare", @"userID": @(userID), @"userName": userInfo.userName}];
+    
+    [RNMeetingCenter shared].currentActiveShareUser = userID;
+    NSDictionary *notiUserInfo = @{@"event": @"onSinkMeetingActiveShare", @"userID": @(userID)};
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"onMeetingEvent"
+                                                        object:nil
+                                                      userInfo:notiUserInfo];
 }
 
 - (void)onSinkShareSizeChange:(NSUInteger)userID {
-    [self sendEvent:@"onMeetingEvent" body:@{@"event": @"sinkShareSizeChange", @"userID": @(userID)}];
+    MobileRTCMeetingUserInfo *userInfo = [[[MobileRTC sharedRTC] getMeetingService] userInfoByID:userID];
+    [self sendEvent:@"onMeetingEvent" body:@{@"event": @"sinkShareSizeChange", @"userID": @(userID), @"userName": userInfo.userName}];
 }
 
 - (void)onSinkMeetingShareReceiving:(NSUInteger)userID {
-    [self sendEvent:@"onMeetingEvent" body:@{@"event": @"sinkMeetingShareReceiving", @"userID": @(userID)}];
+    MobileRTCMeetingUserInfo *userInfo = [[[MobileRTC sharedRTC] getMeetingService] userInfoByID:userID];
+    [self sendEvent:@"onMeetingEvent" body:@{@"event": @"sinkMeetingShareReceiving", @"userID": @(userID), @"userName": userInfo.userName}];
 }
 
 - (void)onWaitingRoomStatusChange:(BOOL)needWaiting {
