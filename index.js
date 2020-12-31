@@ -59,7 +59,7 @@ const RNZoomViewRef = (props, ref) => {
       ZoomModule.switchMyCamera();
     },
     getParticipants: () => {
-      ZoomModule.getParticipants();
+      return ZoomModule.getParticipants();
     },
   }));
 
