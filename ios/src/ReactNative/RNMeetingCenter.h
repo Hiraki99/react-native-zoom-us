@@ -40,6 +40,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)onSinkMeetingPreviewStopped;
 
+- (void)onSinkMeetingVideoRequestUnmuteByHost;
+
+- (void)onSinkMeetingAudioRequestUnmuteByHost;
+
 @end
 
 @class RNZoomView;

@@ -32,6 +32,24 @@
         joinParam.userName = userName;
         joinParam.meetingNumber = meetingNo;
         joinParam.password = pwd;
+        
+        // Phunv: Them doan code nhan tham so truyen bat/tat audio/video
+        BOOL enableAudio = YES;
+        BOOL enableVideo = NO;
+        
+        if ([RNMeetingCenter shared].meetingInfo) {
+            NSNumber *audioValue = [RNMeetingCenter shared].meetingInfo[@"enableAudio"];
+            NSNumber *videoValue = [RNMeetingCenter shared].meetingInfo[@"enableVideo"];
+            
+            if (audioValue) {
+                enableAudio = audioValue.boolValue;
+            }
+            if (videoValue) {
+                enableVideo = videoValue.boolValue;
+            }
+        }
+        joinParam.noAudio = enableAudio ? NO : YES;
+        joinParam.noVideo = enableVideo ? NO : YES;
 //        joinParam.zak = kZAK;
 //        joinParam.participantID = kParticipantID;
 //        joinParam.webinarToken = kWebinarToken;

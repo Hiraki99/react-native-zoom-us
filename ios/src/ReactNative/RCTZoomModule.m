@@ -45,15 +45,47 @@ RCT_EXPORT_METHOD(switchMyCamera)
     [[RNMeetingCenter shared] switchMyCamera];
 }
 
-RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(getParticipants)
+RCT_EXPORT_METHOD(getParticipants:(RCTResponseSenderBlock)callback)
 {
     NSMutableArray *listUsers = [NSMutableArray new];
     for (NSNumber *userId in [[RNMeetingCenter shared] getParticipants]) {
         MobileRTCMeetingUserInfo *userInfo = [[[MobileRTC sharedRTC] getMeetingService] userInfoByID:userId.integerValue];
-        [listUsers addObject:@{@"userID": userId, @"userName": userInfo.userName ?: @""}];
+        [listUsers addObject:
+         @{
+            @"userID": userId,
+            @"userName": userInfo.userName ?: @"",
+            @"videoStatus": userInfo && userInfo.videoStatus.isSending ? @1 : @0,
+            @"audioStatus": userInfo && userInfo.audioStatus.isMuted ? @0 : @1,
+         }];
     }
-    return listUsers;
+    callback(@[[NSNull null], listUsers]);
 }
+RCT_EXPORT_METHOD(getMyInfo:(RCTResponseSenderBlock)callback)
+{
+    NSUInteger userID = [[[MobileRTC sharedRTC] getMeetingService] myselfUserID];
+    MobileRTCMeetingUserInfo *userInfo = [[[MobileRTC sharedRTC] getMeetingService] userInfoByID:userID];
+    NSDictionary *reponse =
+    @{
+        @"userID": @(userID),
+        @"userName": userInfo.userName ?: @"",
+        @"videoStatus": userInfo && userInfo.videoStatus.isSending ? @1 : @0,
+        @"audioStatus": userInfo && userInfo.audioStatus.isMuted ? @0 : @1,
+    };
+    callback(@[[NSNull null], reponse]);
+}
+RCT_EXPORT_METHOD(getUserInfo:(NSUInteger)userID callback:(RCTResponseSenderBlock)callback)
+{
+    MobileRTCMeetingUserInfo *userInfo = [[[MobileRTC sharedRTC] getMeetingService] userInfoByID:userID];
+    NSDictionary *reponse =
+    @{
+        @"userID": @(userID),
+        @"userName": userInfo.userName ?: @"",
+        @"videoStatus": userInfo && userInfo.videoStatus.isSending ? @1 : @0,
+        @"audioStatus": userInfo && userInfo.audioStatus.isMuted ? @0 : @1,
+    };
+    callback(@[[NSNull null], reponse]);
+}
+
 RCT_EXPORT_METHOD(startObserverEvent)
 {
     [[RNMeetingCenter shared] startObserverEvent];
@@ -127,20 +159,46 @@ RCT_EXPORT_METHOD(stopObserverEvent)
 
 - (void)onSinkMeetingAudioStatusChange:(NSUInteger)userID {
     MobileRTCMeetingUserInfo *userInfo = [[[MobileRTC sharedRTC] getMeetingService] userInfoByID:userID];
-    [self sendEvent:@"onMeetingEvent" body:@{@"event": @"sinkMeetingAudioStatusChange", @"userID": @(userID), @"userName": userInfo.userName ?: @""}];
+    [self sendEvent:@"onMeetingEvent"
+               body:@{
+                   @"event": @"sinkMeetingAudioStatusChange",
+                   @"userID": @(userID),
+                   @"userName": userInfo.userName ?: @"",
+                   @"audioStatus": userInfo && userInfo.audioStatus.isMuted ? @0 : @1
+               }];
 }
 
 - (void)onSinkMeetingMyAudioTypeChange {
-    [self sendEvent:@"onMeetingEvent" body:@{@"event": @"sinkMeetingMyAudioTypeChange"}];
+    NSUInteger myUserID = [[[MobileRTC sharedRTC] getMeetingService] myselfUserID];
+    MobileRTCMeetingUserInfo *userInfo = [[[MobileRTC sharedRTC] getMeetingService] userInfoByID:myUserID];
+    
+    [self sendEvent:@"onMeetingEvent"
+               body:@{
+                   @"event": @"sinkMeetingMyAudioTypeChange",
+                   @"audioStatus": userInfo && userInfo.audioStatus.isMuted ? @0 : @1
+               }];
 }
 
 - (void)onSinkMeetingVideoStatusChange:(NSUInteger)userID {
     MobileRTCMeetingUserInfo *userInfo = [[[MobileRTC sharedRTC] getMeetingService] userInfoByID:userID];
-    [self sendEvent:@"onMeetingEvent" body:@{@"event": @"sinkMeetingVideoStatusChange", @"userID": @(userID), @"userName": userInfo.userName ?: @""}];
+    [self sendEvent:@"onMeetingEvent"
+               body:@{
+                   @"event": @"sinkMeetingVideoStatusChange",
+                   @"userID": @(userID),
+                   @"userName": userInfo.userName ?: @"",
+                   @"videoStatus": userInfo && userInfo.videoStatus.isSending ? @1 : @0,
+               }];
 }
 
 - (void)onMyVideoStateChange {
-    [self sendEvent:@"onMeetingEvent" body:@{@"event": @"myVideoStateChange"}];
+    NSUInteger myUserID = [[[MobileRTC sharedRTC] getMeetingService] myselfUserID];
+    MobileRTCMeetingUserInfo *userInfo = [[[MobileRTC sharedRTC] getMeetingService] userInfoByID:myUserID];
+    
+    [self sendEvent:@"onMeetingEvent"
+               body:@{
+                   @"event": @"myVideoStateChange",
+                   @"videoStatus": userInfo && userInfo.videoStatus.isSending ? @1 : @0,
+               }];
 }
 
 - (void)onSinkMeetingUserJoin:(NSUInteger)userID {
@@ -185,6 +243,14 @@ RCT_EXPORT_METHOD(stopObserverEvent)
     [[NSNotificationCenter defaultCenter] postNotificationName:@"onMeetingEvent"
                                                         object:nil
                                                       userInfo:userInfo];
+}
+
+- (void)onSinkMeetingVideoRequestUnmuteByHost {
+    [self sendEvent:@"onMeetingEvent" body:@{@"event": @"sinkMeetingVideoRequestUnmuteByHost"}];
+}
+
+- (void)onSinkMeetingAudioRequestUnmuteByHost {
+    [self sendEvent:@"onMeetingEvent" body:@{@"event": @"sinkMeetingAudioRequestUnmuteByHost"}];
 }
 
 - (void) sendEvent:(NSString *)eventName body:(NSDictionary *)bodyData

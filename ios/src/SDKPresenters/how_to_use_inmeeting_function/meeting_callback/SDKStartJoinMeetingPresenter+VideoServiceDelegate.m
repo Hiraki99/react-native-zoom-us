@@ -88,10 +88,15 @@
 
 - (void)onSinkMeetingVideoRequestUnmuteByHost:(void (^)(BOOL Accept))completion
 {
-    if (completion)
-    {
-        completion(YES);
+    // Phunv: Them doan code nay
+    if ([RNMeetingCenter shared].currentMeetingDelegate) {
+        [[RNMeetingCenter shared].currentMeetingDelegate onSinkMeetingVideoRequestUnmuteByHost];
     }
+    // Comment doan code nay
+//    if (completion)
+//    {
+//        completion(YES);
+//    }
 }
 
 @end
