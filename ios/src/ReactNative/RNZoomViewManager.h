@@ -8,6 +8,6 @@
 
 #import <React/RCTViewManager.h>
 
-@interface RNZoomViewManager : RCTViewManager
+@interface RNZoomViewManager : RCTViewManager 
 
 @end
