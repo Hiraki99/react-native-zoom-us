@@ -65,11 +65,15 @@
     }
 }
 
-#if 0
+// Phunv: Comment doan code #if nay nhe
+// #if 0
 - (void)onSinkMeetingAudioRequestUnmuteByHost
 {
-    NSLog(@"the host require meeting attendants to enable microphone");
+    //NSLog(@"the host require meeting attendants to enable microphone");
+    if ([RNMeetingCenter shared].currentMeetingDelegate) {
+        [[RNMeetingCenter shared].currentMeetingDelegate onSinkMeetingAudioRequestUnmuteByHost];
+    }
 }
-#endif
+//#endif
 
 @end
