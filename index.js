@@ -5,24 +5,22 @@ import {
   requireNativeComponent,
   NativeModules,
   NativeEventEmitter,
-  // Animated,
-  // PanResponder,
 } from 'react-native';
 const NativeZoomView = requireNativeComponent('RNZoomView', RNZoomViewRef);
 const {ZoomModule} = NativeModules;
 const eventEmitter = new NativeEventEmitter(ZoomModule);
 
+export const initZoomSdk = (domain, clientKey, clientSecret) => {
+  ZoomModule.initZoomSDK({
+    domain,
+    clientKey,
+    clientSecret,
+  });
+};
+
 const RNZoomViewRef = (props, ref) => {
   const {onEvent} = props;
   const nativeZoomViewRef = React.useRef();
-
-  React.useEffect(() => {
-    ZoomModule.initZoomSDK({
-      domain: 'zoom.us',
-      clientKey: 'yaEkS5rguwHNuFvqOsDh8VMvZOkRSNEMJpjn',
-      clientSecret: 'ngtmOzHAu0FwI55Faoe0AD3tVm86D3XfkzTj',
-    });
-  }, []);
 
   React.useEffect(() => {
     const subscriptionEvent = eventEmitter.addListener(
@@ -38,7 +36,6 @@ const RNZoomViewRef = (props, ref) => {
   }, [onEvent]);
 
   const joinMeetingWithPassword = React.useCallback((data) => {
-    console.log('data ', data);
     ZoomModule.joinMeeting(data);
   }, []);
 
