@@ -56,7 +56,24 @@ const RNZoomViewRef = (props, ref) => {
       ZoomModule.switchMyCamera();
     },
     getParticipants: () => {
-      return ZoomModule.getParticipants();
+      return new Promise((res) => {
+        ZoomModule.getParticipants((err, members) => {
+          if (err) {
+            return res({error: true, members: []});
+          }
+          return res({error: false, members});
+        });
+      });
+    },
+    getUserInfo: (userId) => {
+      return new Promise((res) => {
+        ZoomModule.getUserInfo(userId, (error, info) => {
+          if (error) {
+            return res({error: true, info: null});
+          }
+          return res({error: false, info});
+        });
+      });
     },
   }));
 
