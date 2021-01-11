@@ -29,6 +29,10 @@ export const ZoomLeaveCurrentMeeting = () => {
 export const onOffAudioZoom = () => {
   ZoomModule.onOffMyAudio();
 };
+
+export const onOffMyVideoZoom = () => {
+  ZoomModule.onOffMyVideo();
+};
 export const switchCameraZoom = () => {
   ZoomModule.switchMyCamera();
 };
