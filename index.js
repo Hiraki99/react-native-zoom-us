@@ -22,6 +22,10 @@ export const initZoomSdk = (domain, clientKey, clientSecret) => {
 export const ZoomJoinMeetingWithPassword = (data) => {
   ZoomModule.joinMeeting(data);
 };
+export const ZoomLeaveCurrentMeeting = () => {
+  ZoomModule.leaveCurrentMeeting();
+};
+
 export const onOffAudioZoom = () => {
   ZoomModule.onOffMyAudio();
 };
