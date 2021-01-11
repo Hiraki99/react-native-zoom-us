@@ -6,7 +6,7 @@ import {
   NativeModules,
   NativeEventEmitter,
 } from 'react-native';
-const NativeZoomView = requireNativeComponent('RNZoomView', RNZoomViewRef);
+const NativeZoomView = requireNativeComponent('RNZoomView', RNZoomView);
 const {ZoomModule} = NativeModules;
 const eventEmitter = new NativeEventEmitter(ZoomModule);
 let subscriptionEvent;
