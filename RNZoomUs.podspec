@@ -1,7 +1,7 @@
 
 Pod::Spec.new do |s|
   s.name         = "RNZoomUs"
-  s.version      = "2.0.0"
+  s.version      = "2.0.1"
   s.summary      = "RNZoomUs"
   s.description  = <<-DESC
                   React Native integration for Zoom SDK
@@ -17,11 +17,11 @@ Pod::Spec.new do |s|
 
   s.requires_arc = false
   s.requires_arc = 'ios/src/ReactNative/*'
-  
+
   s.libraries = "sqlite3", "z.1.2.5", "c++"
 
   s.dependency "React"
-  s.dependency "ZoomSDK_iOS", '5.2.42037.1113'  
+  s.dependency "ZoomSDK_iOS", '5.2.42037.1113'
 
   s.prefix_header_contents = "
 #import <Foundation/Foundation.h>
