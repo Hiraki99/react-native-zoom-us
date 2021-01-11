@@ -19,17 +19,17 @@ export const initZoomSdk = (domain, clientKey, clientSecret) => {
   });
 };
 
-export const joinMeetingWithPassword = (data) => {
+export const ZoomJoinMeetingWithPassword = (data) => {
   ZoomModule.joinMeeting(data);
 };
-export const onOffAudio = () => {
+export const onOffAudioZoom = () => {
   ZoomModule.onOffMyAudio();
 };
-export const switchCamera = () => {
+export const switchCameraZoom = () => {
   ZoomModule.switchMyCamera();
 };
 
-export const getParticipants = () => {
+export const getParticipantsZoom = () => {
   return new Promise((res) => {
     ZoomModule.getParticipants((err, members) => {
       if (err) {
@@ -39,7 +39,7 @@ export const getParticipants = () => {
     });
   });
 }
-export const getUserInfo = (userId) => {
+export const getUserInfoZoom = (userId) => {
   return new Promise((res) => {
     ZoomModule.getUserInfo(userId, (error, info) => {
       if (error) {
@@ -50,7 +50,7 @@ export const getUserInfo = (userId) => {
   });
 }
 
-export const onEventListener = (onEvent = () => {}) =>{
+export const onEventListenerZoom = (onEvent = () => {}) =>{
   subscriptionEvent = eventEmitter.addListener(
     'onMeetingEvent',
     onEvent,
@@ -58,7 +58,7 @@ export const onEventListener = (onEvent = () => {}) =>{
   ZoomModule.startObserverEvent();
 }
 
-export const removeListener = () => {
+export const removeListenerZoom = () => {
   subscriptionEvent.remove();
   ZoomModule.stopObserverEvent();
   
