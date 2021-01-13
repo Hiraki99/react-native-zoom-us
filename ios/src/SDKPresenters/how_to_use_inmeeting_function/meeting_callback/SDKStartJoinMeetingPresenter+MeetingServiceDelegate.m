@@ -194,14 +194,16 @@
 }
 #endif
 
-#if 0
+// Phunv14: Comment de custom man waiting the host
+//#if 0
 - (void)onJBHWaitingWithCmd:(JBHCmd)cmd
 {
-    if (self.mainVC) {
-        [self.mainVC onJBHWaitingWithCmd:cmd];
-    }
+    // Phunv14: Comment de disable man waiting the host
+//    if (self.mainVC) {
+//        [self.mainVC onJBHWaitingWithCmd:cmd];
+//    }
 }
-#endif
+//#endif
 
 #if 0
 - (BOOL)onClickedInviteButton:(UIViewController*)parentVC addInviteActionItem:(NSMutableArray *)array
