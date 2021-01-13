@@ -87,6 +87,7 @@
     if (ms) {
         // Phunv: Bat tinh nang enableCustomMeeting
         [[MobileRTC sharedRTC] getMeetingSettings].enableCustomMeeting = YES;
+        [[MobileRTC sharedRTC] getMeetingSettings].waitingHUDHidden = YES;
         self.pendingJoinMeetingNumber = nil;
         self.pendingJoinMeetingPassword = nil;
         [self.presenter joinMeeting:meetingNo withPassword:pwd rnZoomView:rnZoomView];
@@ -104,6 +105,7 @@
         if (ms) {
             // Phunv: Bat tinh nang enableCustomMeeting
             [[MobileRTC sharedRTC] getMeetingSettings].enableCustomMeeting = YES;
+            [[MobileRTC sharedRTC] getMeetingSettings].waitingHUDHidden = YES;
             [self.presenter joinMeeting:self.pendingJoinMeetingNumber withPassword:self.pendingJoinMeetingPassword rnZoomView:self.presenter.rnZoomView];
             self.pendingJoinMeetingNumber = nil;
             self.pendingJoinMeetingPassword = nil;

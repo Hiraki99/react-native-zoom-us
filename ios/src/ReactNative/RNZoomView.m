@@ -19,6 +19,9 @@
 
 - (void) reactSetFrame:(CGRect)frame{
     self.frame=frame;
+    if (_rnMeetingView) {
+        [_rnMeetingView updateFrame: CGRectMake(0, 0, frame.size.width, frame.size.height)];
+    }
 }
 
 - (void) setUserID:(NSString *)userID {
@@ -90,13 +93,13 @@
 - (void) createMeetingView {
     if (!_rnMeetingView) {
         _rnMeetingView = [[RNMeetingView alloc] initWithFrame:self.bounds];
+        [_rnMeetingView updateFrame: CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height)];
         [_rnMeetingView setUserID:_userID];
         [self addSubview:_rnMeetingView];
     }
 }
 - (void)layoutSubviews {
     [super layoutSubviews];
-    _rnMeetingView.frame = self.bounds;
 }
 - (void) handleEventPreviewStopped {
     [_rnMeetingView handleEventPreviewStopped];

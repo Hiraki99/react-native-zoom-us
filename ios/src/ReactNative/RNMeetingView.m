@@ -11,18 +11,19 @@
 
 @interface RNMeetingView() {
     NSString *currentUserID;
+    CGRect reactFrame;
 }
 @end
 
 @implementation RNMeetingView
 
 /*
-// Only override drawRect: if you perform custom drawing.
-// An empty implementation adversely affects performance during animation.
-- (void)drawRect:(CGRect)rect {
-    // Drawing code
-}
-*/
+ // Only override drawRect: if you perform custom drawing.
+ // An empty implementation adversely affects performance during animation.
+ - (void)drawRect:(CGRect)rect {
+ // Drawing code
+ }
+ */
 - (instancetype)initWithCoder:(NSCoder *)coder
 {
     self = [super initWithCoder:coder];
@@ -107,16 +108,13 @@
         }
     }
 }
-
 - (void) commonInit {
+    currentUserID = nil;
+    reactFrame = CGRectZero;
 }
 
 - (void)layoutSubviews {
     [super layoutSubviews];
-    _videoView.frame = self.bounds;
-    _preVideoView.frame = self.bounds;
-    _activeVideoView.frame = self.bounds;
-    _activeShareView.frame = self.bounds;
 }
 
 - (void)dealloc {
@@ -189,5 +187,15 @@
         _preVideoView = [[MobileRTCPreviewVideoView alloc] initWithFrame:self.bounds];
     }
     return _preVideoView;
+}
+- (void) updateFrame:(CGRect) frame {
+    self.frame = frame;
+    if (frame.size.width != reactFrame.size.width || frame.size.height != reactFrame.size.height) {
+        reactFrame = frame;
+        // Tao lai view o day
+        if (currentUserID) {
+            [self setUserID:currentUserID];
+        }
+    }
 }
 @end
