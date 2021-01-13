@@ -95,6 +95,21 @@ RCT_EXPORT_METHOD(stopObserverEvent)
 {
     [[RNMeetingCenter shared] stopObserverEvent];
 }
+RCT_EXPORT_METHOD(setHostUser:(NSString *)userID)
+{
+    if ([[MobileRTC sharedRTC] getMeetingService]) {
+        if (userID && userID.length > 0) {
+            NSInteger userIDInt = [userID integerValue];
+            NSInteger myUserID = [[[MobileRTC sharedRTC] getMeetingService] myselfUserID];
+            if (myUserID > 0 && userIDInt > 0) {
+                BOOL iAmHost = [[[MobileRTC sharedRTC] getMeetingService] isHostUser:myUserID];
+                if (iAmHost) {
+                    [[[MobileRTC sharedRTC] getMeetingService] makeHost:userIDInt];
+                }
+            }
+        }
+    }
+}
 - (dispatch_queue_t)methodQueue
 {
     return dispatch_get_main_queue();
