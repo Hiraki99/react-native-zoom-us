@@ -110,6 +110,24 @@ RCT_EXPORT_METHOD(setHostUser:(NSString *)userID)
         }
     }
 }
+RCT_EXPORT_METHOD(raiseMyHand)
+{
+    if ([[MobileRTC sharedRTC] getMeetingService]) {
+        NSInteger myUserID = [[[MobileRTC sharedRTC] getMeetingService] myselfUserID];
+        if (myUserID > 0) {
+            [[[MobileRTC sharedRTC] getMeetingService] raiseMyHand];
+        }
+    }
+}
+RCT_EXPORT_METHOD(lowerHand)
+{
+    if ([[MobileRTC sharedRTC] getMeetingService]) {
+        NSInteger myUserID = [[[MobileRTC sharedRTC] getMeetingService] myselfUserID];
+        if (myUserID > 0) {
+            [[[MobileRTC sharedRTC] getMeetingService] lowerHand:myUserID];
+        }
+    }
+}
 - (dispatch_queue_t)methodQueue
 {
     return dispatch_get_main_queue();
