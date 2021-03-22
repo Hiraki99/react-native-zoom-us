@@ -75,7 +75,9 @@
         }
         [_videoView setHidden: isJoined ? NO : YES];
         [_preVideoView setHidden: isJoined ? YES : NO];
-        [_videoView showAttendeeVideoWithUserID: [[[MobileRTC sharedRTC] getMeetingService] myselfUserID]];
+        if (isJoined) {
+            [_videoView showAttendeeVideoWithUserID: [[[MobileRTC sharedRTC] getMeetingService] myselfUserID]];
+        }
     }
     else if ([userID isEqualToString:@"active_user"]) {
         if (!_activeVideoView) {
@@ -135,7 +137,7 @@
 }
 
 - (void) handleEventPreviewStopped {
-    if ([[[MobileRTC sharedRTC] getMeetingService] myselfUserID] > 0) {
+    if (_preVideoView && [[[MobileRTC sharedRTC] getMeetingService] myselfUserID] > 0) {
         [_preVideoView setHidden:YES];
         [_videoView setHidden:NO];
         [_videoView showAttendeeVideoWithUserID: [[[MobileRTC sharedRTC] getMeetingService] myselfUserID]];
