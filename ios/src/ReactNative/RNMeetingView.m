@@ -137,7 +137,8 @@
 }
 
 - (void) handleEventPreviewStopped {
-    if (_preVideoView && [[[MobileRTC sharedRTC] getMeetingService] myselfUserID] > 0) {
+    if ([[[MobileRTC sharedRTC] getMeetingService] myselfUserID] > 0 && (_preVideoView || (currentUserID && [currentUserID length] > 0 && [currentUserID integerValue] == [[[MobileRTC sharedRTC] getMeetingService] myselfUserID])))
+    {
         [_preVideoView setHidden:YES];
         [_videoView setHidden:NO];
         [_videoView showAttendeeVideoWithUserID: [[[MobileRTC sharedRTC] getMeetingService] myselfUserID]];
