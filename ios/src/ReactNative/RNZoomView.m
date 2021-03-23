@@ -88,6 +88,14 @@
                 [_rnMeetingView handleUserActiveShare: userID];
             }
         }
+        if ([event isEqualToString:@"sinkMeetingVideoStatusChange"] || [event isEqualToString:@"sinkMeetingActiveVideo"]) {
+            if (_rnMeetingView) {
+                NSNumber *userID = userInfo[@"userID"];
+                if (_userID && [_userID isEqualToString:[NSString stringWithFormat:@"%@", userID]]) {
+                    [_rnMeetingView setUserID:_userID];
+                }
+            }
+        }
     }
 }
 - (void) createMeetingView {

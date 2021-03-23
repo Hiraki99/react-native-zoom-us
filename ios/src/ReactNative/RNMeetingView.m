@@ -41,6 +41,11 @@
     return self;
 }
 - (void) setUserID:(NSString *)userID {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self setUserID2:userID];
+    });
+}
+- (void) setUserID2:(NSString *)userID {
     currentUserID = userID;
     if (_videoView) {
         [_videoView stopAttendeeVideo];
@@ -66,12 +71,14 @@
         BOOL isJoined = NO;
         if ([[MobileRTC sharedRTC] getMeetingService] && [[[MobileRTC sharedRTC] getMeetingService] myselfUserID] > 0) {
             isJoined = YES;
+            if (!_videoView) {
+                [self addSubview:self.videoView];
+            }
         }
-        if (!_videoView) {
-            [self addSubview:self.videoView];
-        }
-        if (!_preVideoView) {
-            [self addSubview:self.preVideoView];
+        else {
+            if (!_preVideoView) {
+                [self addSubview:self.preVideoView];
+            }
         }
         [_videoView setHidden: isJoined ? NO : YES];
         [_preVideoView setHidden: isJoined ? YES : NO];

@@ -209,6 +209,10 @@ RCT_EXPORT_METHOD(lowerHand)
                    @"userID": @(userID),
                    @"userName": userInfo.userName ?: @""
                }];
+    NSDictionary *userInfo2 = @{@"event": @"sinkMeetingActiveVideo", @"userID": @(userID)};
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"onMeetingEvent"
+                                                        object:nil
+                                                      userInfo:userInfo2];
 }
 
 - (void)onSinkMeetingAudioStatusChange:(NSUInteger)userID {
@@ -249,6 +253,11 @@ RCT_EXPORT_METHOD(lowerHand)
                        @"videoStatus": userInfo && userInfo.videoStatus.isSending ? @1 : @0,
                        @"videoRatio": [self getVideoRatio:userID]
                    }];
+        
+        NSDictionary *userInfo2 = @{@"event": @"sinkMeetingVideoStatusChange", @"userID": @(userID)};
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"onMeetingEvent"
+                                                            object:nil
+                                                          userInfo:userInfo2];
     }
 }
 
@@ -263,6 +272,10 @@ RCT_EXPORT_METHOD(lowerHand)
                        @"videoStatus": userInfo && userInfo.videoStatus.isSending ? @1 : @0,
                        @"videoRatio": [self getVideoRatio:myUserID]
                    }];
+        NSDictionary *userInfo2 = @{@"event": @"sinkMeetingVideoStatusChange", @"userID": @(myUserID)};
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"onMeetingEvent"
+                                                            object:nil
+                                                          userInfo:userInfo2];
     }
 }
 
