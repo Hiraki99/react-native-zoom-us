@@ -46,27 +46,29 @@
     });
 }
 - (void) setUserID2:(NSString *)userID {
+    if (currentUserID && ![currentUserID isEqualToString: userID]) {
+        if (_videoView) {
+            [_videoView stopAttendeeVideo];
+            [_videoView removeFromSuperview];
+            _videoView = nil;
+        }
+        if (_preVideoView) {
+            [_preVideoView stopAttendeeVideo];
+            [_preVideoView removeFromSuperview];
+            _preVideoView = nil;
+        }
+        if (_activeVideoView) {
+            [_activeVideoView stopAttendeeVideo];
+            [_activeVideoView removeFromSuperview];
+            _activeVideoView = nil;
+        }
+        if (_activeShareView) {
+            [_activeShareView stopActiveShare];
+            [_activeShareView removeFromSuperview];
+            _activeShareView = nil;
+        }
+    }
     currentUserID = userID;
-    if (_videoView) {
-        [_videoView stopAttendeeVideo];
-        [_videoView removeFromSuperview];
-        _videoView = nil;
-    }
-    if (_preVideoView) {
-        [_preVideoView stopAttendeeVideo];
-        [_preVideoView removeFromSuperview];
-        _preVideoView = nil;
-    }
-    if (_activeVideoView) {
-        [_activeVideoView stopAttendeeVideo];
-        [_activeVideoView removeFromSuperview];
-        _activeVideoView = nil;
-    }
-    if (_activeShareView) {
-        [_activeShareView stopActiveShare];
-        [_activeShareView removeFromSuperview];
-        _activeShareView = nil;
-    }
     if ([userID isEqualToString:@"local_user"]) {
         BOOL isJoined = NO;
         if ([[MobileRTC sharedRTC] getMeetingService] && [[[MobileRTC sharedRTC] getMeetingService] myselfUserID] > 0) {
@@ -89,9 +91,6 @@
     else if ([userID isEqualToString:@"active_user"]) {
         if (!_activeVideoView) {
             [self addSubview:self.activeVideoView];
-            if ([RNMeetingCenter shared].currentActiveVideoUser > 0) {
-                [_activeVideoView showAttendeeVideoWithUserID:[RNMeetingCenter shared].currentActiveVideoUser];
-            }
         }
         if (!_activeShareView) {
             [self addSubview:self.activeShareView];
@@ -103,15 +102,21 @@
         else {
             [_activeShareView setHidden:YES];
             [_activeShareView stopActiveShare];
+            if ([RNMeetingCenter shared].currentActiveVideoUser > 0) {
+                [_activeVideoView showAttendeeVideoWithUserID:[RNMeetingCenter shared].currentActiveVideoUser];
+            }
         }
     }
     else {
         NSCharacterSet* notDigits = [[NSCharacterSet decimalDigitCharacterSet] invertedSet];
         if ([userID rangeOfCharacterFromSet:notDigits].location == NSNotFound)
         {
+            NSUInteger userIDInt = [userID integerValue];
             if (!_videoView) {
-                NSUInteger userIDInt = [userID integerValue];
                 [self addSubview:self.videoView];
+                [_videoView showAttendeeVideoWithUserID:userIDInt];
+            }
+            else {
                 [_videoView showAttendeeVideoWithUserID:userIDInt];
             }
         }
