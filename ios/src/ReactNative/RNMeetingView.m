@@ -42,11 +42,16 @@
 }
 - (void) setUserID:(NSString *)userID {
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self setUserID2:userID];
+        [self setUserID2:userID force:YES];
     });
 }
-- (void) setUserID2:(NSString *)userID {
-    if (currentUserID && ![currentUserID isEqualToString: userID]) {
+- (void) setUserID3:(NSString *)userID {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self setUserID2:userID force:YES];
+    });
+}
+- (void) setUserID2:(NSString *)userID force:(BOOL) force {
+    if ((currentUserID && ![currentUserID isEqualToString: userID]) || force) {
         if (_videoView) {
             [_videoView stopAttendeeVideo];
             [_videoView removeFromSuperview];
@@ -209,7 +214,7 @@
         reactFrame = frame;
         // Tao lai view o day
         if (currentUserID) {
-            [self setUserID:currentUserID];
+            [self setUserID3:currentUserID];
         }
     }
 }
