@@ -42,12 +42,12 @@
 }
 - (void) setUserID:(NSString *)userID {
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self setUserID2:userID force:YES];
+        [self setUserID2:userID force:NO];
     });
 }
 - (void) setUserID3:(NSString *)userID {
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self setUserID2:userID force:YES];
+        [self setUserID2:userID force:NO];
     });
 }
 - (void) setUserID2:(NSString *)userID force:(BOOL) force {
