@@ -12,6 +12,7 @@
 @interface RNMeetingView() {
     NSString *currentUserID;
     CGRect reactFrame;
+    NSTimeInterval timeStampSetUserID;
 }
 @end
 
@@ -41,17 +42,20 @@
     return self;
 }
 - (void) setUserID:(NSString *)userID {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self setUserID2:userID force:NO];
-    });
+    [self setUserID2:userID force:NO];
 }
 - (void) setUserID3:(NSString *)userID {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self setUserID2:userID force:NO];
-    });
+    [self setUserID2:userID force:NO];
 }
 - (void) setUserID2:(NSString *)userID force:(BOOL) force {
-    if ((currentUserID && ![currentUserID isEqualToString: userID]) || force) {
+    BOOL removeAll = NO;
+    if (force) {
+        removeAll = YES;
+    }
+    else {
+        removeAll = !currentUserID || (currentUserID && ![currentUserID isEqualToString:userID]);
+    }
+    if (removeAll) {
         if (_videoView) {
             [_videoView stopAttendeeVideo];
             [_videoView removeFromSuperview];
@@ -72,8 +76,12 @@
             [_activeShareView removeFromSuperview];
             _activeShareView = nil;
         }
+        timeStampSetUserID = [[NSDate date] timeIntervalSince1970];
     }
     currentUserID = userID;
+    if (currentUserID.length == 0) {
+        return;
+    }
     if ([userID isEqualToString:@"local_user"]) {
         BOOL isJoined = NO;
         if ([[MobileRTC sharedRTC] getMeetingService] && [[[MobileRTC sharedRTC] getMeetingService] myselfUserID] > 0) {
@@ -130,10 +138,12 @@
 - (void) commonInit {
     currentUserID = nil;
     reactFrame = CGRectZero;
+    timeStampSetUserID = 0;
 }
 
 - (void)layoutSubviews {
     [super layoutSubviews];
+    _videoView.frame = self.bounds;
 }
 
 - (void)dealloc {
@@ -210,6 +220,7 @@
 }
 - (void) updateFrame:(CGRect) frame {
     self.frame = frame;
+    _videoView.frame = self.bounds;
     if (frame.size.width != reactFrame.size.width || frame.size.height != reactFrame.size.height) {
         reactFrame = frame;
         // Tao lai view o day
@@ -217,5 +228,12 @@
             [self setUserID3:currentUserID];
         }
     }
+}
+- (BOOL) hasVideo {
+    if (timeStampSetUserID == 0) {
+        return NO;
+    }
+    NSTimeInterval currentTime = [[NSDate date] timeIntervalSince1970];
+    return currentTime - timeStampSetUserID >= 3.0;
 }
 @end

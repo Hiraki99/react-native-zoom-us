@@ -22,8 +22,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void) handleEventPreviewStopped;
 - (void) handleUserActiveShare: (NSNumber *) userID;
-
 - (void) updateFrame:(CGRect) frame;
+- (BOOL) hasVideo;
 
 @end
 

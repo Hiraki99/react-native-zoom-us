@@ -16,8 +16,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RNZoomView : UIView
 
-@property (strong, nonatomic) RNMeetingView *rnMeetingView;
 @property (nonatomic, strong) NSString *userID;
+@property (strong, nonatomic) RNMeetingView *rnMeetingView;
+@property (strong, nonatomic) UIImageView *captureImage;
 
 @end
 
