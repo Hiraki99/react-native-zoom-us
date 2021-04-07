@@ -79,7 +79,7 @@ const RNZoomView = (props) => {
     <NativeZoomView
       ref={nativeZoomViewRef}
       style={props.style}
-      userID={props.userID || 'local_user'}
+      userID={props.userID || ''}
     />
   );
 };
