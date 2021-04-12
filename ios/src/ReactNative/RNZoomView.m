@@ -57,7 +57,7 @@
                 else if ([_rnMeetingView hasVideo]) {
                     lastFrameUserID = _userID;
                     lastFrameImage = [self captureVideo:_rnMeetingView];
-                }
+                }                
             }
             _userID = userID;
             timeStampSetUserID = [[NSDate date] timeIntervalSince1970];
@@ -151,7 +151,7 @@
         [timerHideLastFrame invalidate];
         timerHideLastFrame = nil;
     }
-    if (lastFrameImage && lastFrameUserID && [lastFrameUserID isEqualToString:_userID]) {
+    if (lastFrameImage && lastFrameUserID && ([lastFrameUserID isEqualToString:_userID] || (!_userID || _userID.length == 0))) {
         [_captureImage setImage:lastFrameImage];
         [_captureImage setHidden:NO];
         timerHideLastFrame = [NSTimer scheduledTimerWithTimeInterval:3.0
@@ -165,11 +165,13 @@
     }
 }
 - (void) hideLastFrame {
-    if (timerHideLastFrame) {
-        [timerHideLastFrame invalidate];
-        timerHideLastFrame = nil;
+    if (_userID && _userID.length > 0) {
+        if (timerHideLastFrame) {
+            [timerHideLastFrame invalidate];
+            timerHideLastFrame = nil;
+        }
+        [_captureImage setHidden:YES];
     }
-    [_captureImage setHidden:YES];
 }
 - (void)layoutSubviews {
     [super layoutSubviews];
