@@ -154,7 +154,7 @@
     if (lastFrameImage && lastFrameUserID && ([lastFrameUserID isEqualToString:_userID] || (!_userID || _userID.length == 0))) {
         [_captureImage setImage:lastFrameImage];
         [_captureImage setHidden:NO];
-        timerHideLastFrame = [NSTimer scheduledTimerWithTimeInterval:3.0
+        timerHideLastFrame = [NSTimer scheduledTimerWithTimeInterval:1.0
             target:self
             selector:@selector(hideLastFrame)
             userInfo:nil
@@ -163,7 +163,7 @@
     else {
         [_rnMeetingView setHidden:YES];
         [_captureImage setHidden:YES];
-        timerHideLastFrame = [NSTimer scheduledTimerWithTimeInterval:3.0
+        timerHideLastFrame = [NSTimer scheduledTimerWithTimeInterval:1.0
                                                               target:self
                                                             selector:@selector(hideLastFrame)
                                                             userInfo:nil
