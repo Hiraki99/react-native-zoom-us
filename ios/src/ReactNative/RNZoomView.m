@@ -124,9 +124,9 @@
                 if (_userID && [_userID isEqualToString:[NSString stringWithFormat:@"%@", userID]]) {
                     [_rnMeetingView setUserID:_userID];
                     NSTimeInterval currentTime = [[NSDate date] timeIntervalSince1970];
-                    if (currentTime - timeStampSetUserID >= 0.5) {
+                    //if (currentTime - timeStampSetUserID >= 0.5) {
                         [self hideLastFrame];
-                    }
+                    //}
                 }
             }
         }
@@ -161,7 +161,13 @@
             repeats:NO];
     }
     else {
+        [_rnMeetingView setHidden:YES];
         [_captureImage setHidden:YES];
+        timerHideLastFrame = [NSTimer scheduledTimerWithTimeInterval:3.0
+                                                              target:self
+                                                            selector:@selector(hideLastFrame)
+                                                            userInfo:nil
+                                                             repeats:NO];
     }
 }
 - (void) hideLastFrame {
@@ -171,6 +177,7 @@
             timerHideLastFrame = nil;
         }
         [_captureImage setHidden:YES];
+        [_rnMeetingView setHidden:NO];
     }
 }
 - (void)layoutSubviews {
