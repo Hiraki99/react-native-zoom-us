@@ -8,6 +8,7 @@
 
 #import "RCTZoomModule.h"
 #import "RNMeetingCenter.h"
+#import "LastFrameManager.h"
 
 @implementation RCTZoomModule
 
@@ -158,6 +159,7 @@ RCT_EXPORT_METHOD(lowerHand)
             [RNMeetingCenter shared].isJoinedRoom = NO;
             [RNMeetingCenter shared].currentActiveShareUser = 0;
             [RNMeetingCenter shared].currentActiveVideoUser = 0;
+            [[LastFrameManager sharedManager] resetCaptures];
             return @"meeting_end";
         case MobileRTCMeetingState_Unknow:///<Unknown status.
             return @"unknown_status";

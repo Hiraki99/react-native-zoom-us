@@ -9,12 +9,12 @@
 #import "RNZoomView.h"
 #import "RNMeetingView.h"
 #import "RNMeetingCenter.h"
+#import "LastFrameManager.h"
 
 @interface RNZoomView() {
-    UIImage *lastFrameImage;
-    NSString *lastFrameUserID;
     NSTimer *timerHideLastFrame;
-    NSTimeInterval timeStampSetUserID;
+    NSString *lastUserId;
+    NSString *lastType;
 }
 
 @end
@@ -41,8 +41,22 @@
         return nil;
     }
 }
-
-- (void) setUserID:(NSString *)userID {
+- (NSString *) getKey {
+    if (_userID && _userID.length > 0 && _type) {
+        return [NSString stringWithFormat:@"%@_%@", _userID, _type];
+    }
+    return @"";
+}
+- (NSString *) getLastKey {
+    if (lastUserId && lastUserId.length > 0 && lastType) {
+        return [NSString stringWithFormat:@"%@_%@", lastUserId, lastType];
+    }
+    return @"";
+}
+- (void) setUserID:(NSString *)userInput {
+    NSArray *splitArrays  = [userInput componentsSeparatedByString:@"_"];
+    NSString *userID = splitArrays[0];
+    NSString *type = splitArrays && splitArrays.count >= 2 ? splitArrays[1] : @"";
     if (userID) {
         BOOL hasChange = YES;
         if (_userID && [_userID isEqualToString:userID]) {
@@ -50,17 +64,21 @@
         }
         if (hasChange) {
             if (_userID.length > 0 && _rnMeetingView) {
-                if (!lastFrameImage) {
-                    lastFrameUserID = _userID;
-                    lastFrameImage = [self captureVideo:_rnMeetingView];
+                if (![[LastFrameManager sharedManager] getLastFrame:[self getKey]]) {
+                    UIImage *lastFrame = [self captureVideo:_rnMeetingView];
+                    [[LastFrameManager sharedManager] setLastFrame:lastFrame forKey:[self getKey]];
+                } else {
+                    if ([_rnMeetingView hasVideo]) {
+                        UIImage *lastFrame = [self captureVideo:_rnMeetingView];
+                        [[LastFrameManager sharedManager] setLastFrame:lastFrame forKey:[self getKey]];
+                    }
                 }
-                else if ([_rnMeetingView hasVideo]) {
-                    lastFrameUserID = _userID;
-                    lastFrameImage = [self captureVideo:_rnMeetingView];
-                }                
             }
+            lastUserId = _userID;
+            lastType = _type;
             _userID = userID;
-            timeStampSetUserID = [[NSDate date] timeIntervalSince1970];
+            _type = type;
+            //timeStampSetUserID = [[NSDate date] timeIntervalSince1970];
             if (_rnMeetingView) {
                 [_rnMeetingView setUserID: userID];
                 [self showLastFrame];
@@ -151,23 +169,40 @@
         [timerHideLastFrame invalidate];
         timerHideLastFrame = nil;
     }
-    if (lastFrameImage && lastFrameUserID && ([lastFrameUserID isEqualToString:_userID] || (!_userID || _userID.length == 0))) {
-        [_captureImage setImage:lastFrameImage];
-        [_captureImage setHidden:NO];
-        timerHideLastFrame = [NSTimer scheduledTimerWithTimeInterval:1.0
-            target:self
-            selector:@selector(hideLastFrame)
-            userInfo:nil
-            repeats:NO];
+    if (_userID && _userID.length > 0) {
+        UIImage *lastFrame = [[LastFrameManager sharedManager] getLastFrame:[self getKey]];
+        if (lastFrame) {
+            [_captureImage setImage:lastFrame];
+            [_captureImage setHidden:NO];
+            timerHideLastFrame = [NSTimer scheduledTimerWithTimeInterval:1.0
+                target:self
+                selector:@selector(hideLastFrame)
+                userInfo:nil
+                repeats:NO];
+        }
+        else {
+            [_rnMeetingView setHidden:YES];
+            [_captureImage setHidden:YES];
+            timerHideLastFrame = [NSTimer scheduledTimerWithTimeInterval:1.0
+                                                                  target:self
+                                                                selector:@selector(hideLastFrame)
+                                                                userInfo:nil
+                                                                 repeats:NO];
+        }
     }
     else {
-        [_rnMeetingView setHidden:YES];
-        [_captureImage setHidden:YES];
-        timerHideLastFrame = [NSTimer scheduledTimerWithTimeInterval:1.0
-                                                              target:self
-                                                            selector:@selector(hideLastFrame)
-                                                            userInfo:nil
-                                                             repeats:NO];
+        if (lastUserId && lastUserId.length > 0) {
+            UIImage *lastFrame = [[LastFrameManager sharedManager] getLastFrame:[self getLastKey]];
+            if (lastFrame) {
+                [_captureImage setImage:lastFrame];
+                [_captureImage setHidden:NO];
+                [_rnMeetingView setHidden:YES];
+            }
+        }
+        else {
+            [_rnMeetingView setHidden:YES];
+            [_captureImage setHidden:YES];
+        }
     }
 }
 - (void) hideLastFrame {
@@ -198,8 +233,5 @@
     [_captureImage setImage: nil];
     [_captureImage removeFromSuperview];
     _captureImage = nil;
-    
-    lastFrameImage = nil;
-    lastFrameUserID = nil;
 }
 @end
