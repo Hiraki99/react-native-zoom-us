@@ -30,6 +30,14 @@ export const onOffAudioZoom = () => {
   ZoomModule.onOffMyAudio();
 };
 
+export const onAudioZoom = () => {
+  ZoomModule.onMyAudio();
+};
+
+export const offAudioZoom = () => {
+  ZoomModule.offMyAudio();
+};
+
 export const onOffMyVideoZoom = () => {
   ZoomModule.onOffMyVideo();
 };

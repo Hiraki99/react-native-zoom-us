@@ -36,6 +36,16 @@ RCT_EXPORT_METHOD(onOffMyAudio)
     [[RNMeetingCenter shared] onOffMyAudio];
 }
 
+RCT_EXPORT_METHOD(onMyAudio)
+{
+    [[RNMeetingCenter shared] onMyAudio];
+}
+
+RCT_EXPORT_METHOD(offMyAudio)
+{
+    [[RNMeetingCenter shared] offMyAudio];
+}
+
 RCT_EXPORT_METHOD(onOffMyVideo)
 {
     [[RNMeetingCenter shared] onOffMyVideo];

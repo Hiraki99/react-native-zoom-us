@@ -71,6 +71,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void) checkPendingJoinMeetingAfterAuth;
 - (BOOL) isEnableRNMeetingView;
 - (void) onOffMyAudio;
+- (void) onMyAudio;
+- (void) offMyAudio;
 - (void) onOffMyVideo;
 - (void) switchMyCamera;
 - (NSArray *) getParticipants;

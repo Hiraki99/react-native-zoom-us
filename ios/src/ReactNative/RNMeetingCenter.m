@@ -131,6 +131,12 @@
                                                         object:nil
                                                       userInfo:userInfo];
 }
+- (void) onMyAudio {
+    [self.audioPresenter turnOnAudio];
+}
+- (void) offMyAudio {
+    [self.audioPresenter turnOffAudio];
+}
 - (void) onOffMyAudio {
     [self.audioPresenter muteMyAudio];
 }

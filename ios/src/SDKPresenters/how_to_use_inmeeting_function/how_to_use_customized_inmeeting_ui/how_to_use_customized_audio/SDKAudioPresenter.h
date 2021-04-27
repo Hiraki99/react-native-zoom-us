@@ -10,6 +10,10 @@
 
 @interface SDKAudioPresenter : NSObject
 
+- (void)turnOnAudio;
+
+- (void)turnOffAudio;
+
 - (void)muteMyAudio;
 
 - (void)switchMyAudioSource;
