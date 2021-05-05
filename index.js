@@ -26,12 +26,8 @@ export const ZoomLeaveCurrentMeeting = () => {
   ZoomModule.leaveCurrentMeeting();
 };
 
-export const onMyAudio = () => {
-  ZoomModule.onMyAudio();
-};
-
-export const offMyAudio = () => {
-  ZoomModule.offMyAudio();
+export const onOffAudioZoom = () => {
+  ZoomModule.onOffMyAudio();
 };
 
 export const onAudioZoom = () => {
@@ -59,7 +55,6 @@ export const getParticipantsZoom = () => {
     });
   });
 }
-
 export const getUserInfoZoom = (userId) => {
   return new Promise((res) => {
     ZoomModule.getUserInfo(userId, (error, info) => {
@@ -82,10 +77,7 @@ export const onEventListenerZoom = (onEvent = () => {}) =>{
 export const removeListenerZoom = () => {
   subscriptionEvent.remove();
   ZoomModule.stopObserverEvent();
-}
-
-export const toast = (text) => {
-  ZoomModule.toast(text);
+  
 }
 
 const RNZoomView = (props) => {
