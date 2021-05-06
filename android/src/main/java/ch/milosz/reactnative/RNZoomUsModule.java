@@ -322,12 +322,14 @@ public class RNZoomUsModule extends ReactContextBaseJavaModule implements
     }
     Objects.requireNonNull(mContext.getCurrentActivity()).runOnUiThread(() -> {
       InMeetingUserInfo info = mZoomSDK.getInMeetingService().getUserInfoById(Long.parseLong(userId));
-      WritableMap map = new WritableNativeMap();
-      map.putInt(ZoomConstants.ARG_USER_ID, (int) info.getUserId());
-      //      map.putString(RNZoomConstants.ARG_PARTICIPANT_ID, info.getParticipantID());
-      map.putString(ZoomConstants.ARG_USER_NAME, info.getUserName());
-      map.putString(ZoomConstants.ARG_AVATAR_PATH, info.getAvatarPath());
-      callback.invoke(null, map);
+      if (info != null) {
+        WritableMap map = new WritableNativeMap();
+        map.putInt(ZoomConstants.ARG_USER_ID, (int) info.getUserId());
+        //      map.putString(RNZoomConstants.ARG_PARTICIPANT_ID, info.getParticipantID());
+        map.putString(ZoomConstants.ARG_USER_NAME, info.getUserName());
+        map.putString(ZoomConstants.ARG_AVATAR_PATH, info.getAvatarPath());
+        callback.invoke(null, map);
+      }
     });
   }
 
