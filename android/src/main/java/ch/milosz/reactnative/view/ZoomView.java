@@ -21,6 +21,7 @@ import com.zipow.videobox.sdk.SDKVideoView;
 
 import ch.milosz.reactnative.R;
 import us.zoom.sdk.InMeetingUserInfo;
+import us.zoom.sdk.MobileRTCVideoUnitAspectMode;
 import us.zoom.sdk.MobileRTCVideoUnitRenderInfo;
 import us.zoom.sdk.MobileRTCVideoView;
 import us.zoom.sdk.MobileRTCVideoViewManager;
@@ -76,6 +77,7 @@ public class ZoomView extends FrameLayout implements SDKVideoView.c {
     if (!TextUtils.isEmpty(userId)) {
       mUserId = userId;
       MobileRTCVideoUnitRenderInfo renderInfo = new MobileRTCVideoUnitRenderInfo(0, 0, 100, 100);
+      renderInfo.aspect_mode = MobileRTCVideoUnitAspectMode.VIDEO_ASPECT_PAN_AND_SCAN;
       mDefaultVideoViewMgr.addAttendeeVideoUnit(Long.parseLong(userId), renderInfo);
     }
   }
