@@ -77,6 +77,7 @@ public class RNZoomUsModule extends ReactContextBaseJavaModule implements
   private ZoomSDK mZoomSDK;
   private MeetingAudioHelper meetingAudioHelper;
   private MeetingVideoHelper meetingVideoHelper;
+  private Callback mInitCallback;
 
   public RNZoomUsModule(ReactApplicationContext context) {
     super(context);
@@ -96,7 +97,8 @@ public class RNZoomUsModule extends ReactContextBaseJavaModule implements
   }
 
   @ReactMethod
-  public void initZoomSDK(ReadableMap data) {
+  public void initZoomSDK(ReadableMap data, Callback callback) {
+    mInitCallback = callback;
     String domain = data.getString("domain");
     String clientKey = data.getString("clientKey");
     String clientSecret = data.getString("clientSecret");
@@ -105,9 +107,6 @@ public class RNZoomUsModule extends ReactContextBaseJavaModule implements
     Objects.requireNonNull(mContext.getCurrentActivity()).runOnUiThread(() -> {
       mZoomSDK = ZoomSDK.getInstance();
       InitAuthSDKHelper.getInstance().initSDK(mContext, RNZoomUsModule.this);
-      //if (mZoomSDK.isInitialized()) {
-      // ZoomSDK.getInstance().getMeetingSettingsHelper().enable720p(true);
-      //}
     });
   }
 
@@ -116,6 +115,9 @@ public class RNZoomUsModule extends ReactContextBaseJavaModule implements
     Log.i(TAG, "onZoomSDKInitializeResult, errorCode=" + errorCode + ", internalErrorCode=" + internalErrorCode);
     if (errorCode != ZoomError.ZOOM_ERROR_SUCCESS) {
       Log.e(TAG, "Failed to initialize Zoom SDK. Error: " + errorCode + ", internalErrorCode=" + internalErrorCode);
+      if (mInitCallback != null) {
+        mInitCallback.invoke(false);
+      }
     } else {
       Objects.requireNonNull(mContext.getCurrentActivity()).runOnUiThread(() -> {
         ZoomSDK.getInstance().getMeetingSettingsHelper().enable720p(false);
@@ -134,6 +136,10 @@ public class RNZoomUsModule extends ReactContextBaseJavaModule implements
         MeetingAudioCallback.getInstance().addListener(this);
         MeetingVideoCallback.getInstance().addListener(this);
         MeetingUserCallback.getInstance().addListener(this);
+
+        if (mInitCallback != null) {
+          mInitCallback.invoke(true);
+        }
       });
       Log.d(TAG, "Initialize Zoom SDK successfully.");
     }

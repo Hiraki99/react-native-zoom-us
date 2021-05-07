@@ -12,10 +12,14 @@ const eventEmitter = new NativeEventEmitter(ZoomModule);
 let subscriptionEvent;
 
 export const initZoomSdk = (domain, clientKey, clientSecret) => {
-  ZoomModule.initZoomSDK({
-    domain,
-    clientKey,
-    clientSecret,
+  return new Promise((res) => {
+    ZoomModule.initZoomSDK({
+      domain,
+      clientKey,
+      clientSecret,
+    }, (rs) => {
+      return res(rs)
+    });
   });
 };
 
