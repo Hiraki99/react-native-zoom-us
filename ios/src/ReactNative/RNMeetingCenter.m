@@ -53,16 +53,15 @@
     }
     return self;
 }
-- (void) setClientInfo:(NSDictionary *) clientInfo {
-    if (!self.zoomClientInfo) {
-        self.zoomClientInfo = [[NSDictionary alloc] initWithDictionary:clientInfo];
-        NSString *domain = self.zoomClientInfo[@"domain"] ?: @"";
-        NSString *clientKey = self.zoomClientInfo[@"clientKey"] ?: @"";
-        NSString *clientSecret = self.zoomClientInfo[@"clientSecret"] ?: @"";
-        
-        [self.setUpPresenter SDKInit:domain];
-        [self.authPresenter SDKAuthWithClientKey:clientKey clientSecret:clientSecret];
-    }
+- (void) setClientInfo:(NSDictionary *) clientInfo callBack:(RCTResponseSenderBlock)initSDKCallback {
+    self.initSDKCallback = initSDKCallback;
+    self.zoomClientInfo = [[NSDictionary alloc] initWithDictionary:clientInfo];
+    NSString *domain = self.zoomClientInfo[@"domain"] ?: @"";
+    NSString *clientKey = self.zoomClientInfo[@"clientKey"] ?: @"";
+    NSString *clientSecret = self.zoomClientInfo[@"clientSecret"] ?: @"";
+    
+    [self.setUpPresenter SDKInit:domain];
+    [self.authPresenter SDKAuthWithClientKey:clientKey clientSecret:clientSecret];
 }
 - (BOOL) isEnableRNMeetingView {
     return YES;

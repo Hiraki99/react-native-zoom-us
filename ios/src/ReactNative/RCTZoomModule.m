@@ -15,9 +15,9 @@
 // To export a module named RCTZoomModule
 RCT_EXPORT_MODULE();
 
-RCT_EXPORT_METHOD(initZoomSDK:(NSDictionary *) clientInfo)
+RCT_EXPORT_METHOD(initZoomSDK:(NSDictionary *) clientInfo callback:(RCTResponseSenderBlock)callback)
 {
-    [[RNMeetingCenter shared] setClientInfo:clientInfo];
+    [[RNMeetingCenter shared] setClientInfo:clientInfo callBack:callback];
 }
 
 RCT_EXPORT_METHOD(joinMeeting:(NSDictionary *) meetingInfo)

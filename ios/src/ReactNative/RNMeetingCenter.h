@@ -7,6 +7,8 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <React/RCTBridgeModule.h>
+#import <React/RCTEventEmitter.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -60,10 +62,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL isJoinedRoom;
 @property (nonatomic, assign) NSUInteger currentActiveShareUser;
 @property (nonatomic, assign) NSUInteger currentActiveVideoUser;
+@property (copy, nonatomic) RCTResponseSenderBlock initSDKCallback;
 
 - (void) startObserverEvent;
 - (void) stopObserverEvent;
-- (void) setClientInfo:(NSDictionary *) clientInfo;
+- (void) setClientInfo:(NSDictionary *) clientInfo callBack:(RCTResponseSenderBlock) initSDKCallback;
 - (void) joinMeeting:(NSDictionary *) meetingInfo;
 - (void) joinMeeting:(NSString*)meetingNo withPassword:(NSString*)pwd rnZoomView:(id) rnZoomView;
 - (void) joinRoomWithUserInfo:(void (^)(NSString *displayName, NSString *password, BOOL cancel))completion;
