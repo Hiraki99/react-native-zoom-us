@@ -311,6 +311,8 @@ public class RNZoomUsModule extends ReactContextBaseJavaModule implements
           params.putString("videoRatio", "1.0");
           params.putBoolean("isHost", info.getInMeetingUserRole() == InMeetingUserInfo.InMeetingUserRole.USERROLE_HOST);
           array.pushMap(params);
+        } else {
+          Log.e(TAG, "failed to getUserInfo: " + userId);
         }
       }
       callback.invoke(null, array);
@@ -324,12 +326,16 @@ public class RNZoomUsModule extends ReactContextBaseJavaModule implements
     }
     Objects.requireNonNull(mContext.getCurrentActivity()).runOnUiThread(() -> {
       InMeetingUserInfo info = mZoomSDK.getInMeetingService().getUserInfoById(Long.parseLong(userId));
-      WritableMap map = new WritableNativeMap();
-      map.putInt(ZoomConstants.ARG_USER_ID, (int) info.getUserId());
-      //      map.putString(RNZoomConstants.ARG_PARTICIPANT_ID, info.getParticipantID());
-      map.putString(ZoomConstants.ARG_USER_NAME, info.getUserName());
-      map.putString(ZoomConstants.ARG_AVATAR_PATH, info.getAvatarPath());
-      callback.invoke(null, map);
+      if (info != null) {
+        WritableMap map = new WritableNativeMap();
+        map.putInt(ZoomConstants.ARG_USER_ID, (int) info.getUserId());
+        //      map.putString(RNZoomConstants.ARG_PARTICIPANT_ID, info.getParticipantID());
+        map.putString(ZoomConstants.ARG_USER_NAME, info.getUserName());
+        map.putString(ZoomConstants.ARG_AVATAR_PATH, info.getAvatarPath());
+        callback.invoke(null, map);
+      } else {
+        Log.e(TAG, "failed to getUserInfo: " + userId);
+      }
     });
   }
 
