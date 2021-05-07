@@ -8,6 +8,6 @@ public @interface ZoomConstants {
   String ARG_EMAIL = "email";
   String ARG_USER_PASSWORD = "userPassword";
 
-  String ARG_USER_ID = "userId";
+  String ARG_USER_ID = "userID";
   String ARG_AVATAR_PATH = "avatarPath";
 }
