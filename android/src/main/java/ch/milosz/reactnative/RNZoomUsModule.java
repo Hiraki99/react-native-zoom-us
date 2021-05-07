@@ -25,6 +25,7 @@ import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.core.PermissionListener;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -297,6 +298,7 @@ public class RNZoomUsModule extends ReactContextBaseJavaModule implements
       if (userIds == null) {
         return;
       }
+      Log.d(TAG, "getParticipants: " + Arrays.toString(userIds.toArray()));
       WritableArray array = new WritableNativeArray();
       for (Long userId : userIds) {
         InMeetingUserInfo info = mZoomSDK.getInMeetingService().getUserInfoById(userId);
@@ -322,42 +324,48 @@ public class RNZoomUsModule extends ReactContextBaseJavaModule implements
     }
     Objects.requireNonNull(mContext.getCurrentActivity()).runOnUiThread(() -> {
       InMeetingUserInfo info = mZoomSDK.getInMeetingService().getUserInfoById(Long.parseLong(userId));
-      if (info != null) {
-        WritableMap map = new WritableNativeMap();
-        map.putInt(ZoomConstants.ARG_USER_ID, (int) info.getUserId());
-        //      map.putString(RNZoomConstants.ARG_PARTICIPANT_ID, info.getParticipantID());
-        map.putString(ZoomConstants.ARG_USER_NAME, info.getUserName());
-        map.putString(ZoomConstants.ARG_AVATAR_PATH, info.getAvatarPath());
-        callback.invoke(null, map);
-      }
+      WritableMap map = new WritableNativeMap();
+      map.putInt(ZoomConstants.ARG_USER_ID, (int) info.getUserId());
+      //      map.putString(RNZoomConstants.ARG_PARTICIPANT_ID, info.getParticipantID());
+      map.putString(ZoomConstants.ARG_USER_NAME, info.getUserName());
+      map.putString(ZoomConstants.ARG_AVATAR_PATH, info.getAvatarPath());
+      callback.invoke(null, map);
     });
   }
 
   @ReactMethod
   public void onMyAudio() {
     Objects.requireNonNull(mContext.getCurrentActivity()).runOnUiThread(() -> {
-      meetingAudioHelper.switchAudio();
+      if (meetingAudioHelper != null) {
+        meetingAudioHelper.switchAudio();
+      }
     });
   }
 
   @ReactMethod
   public void offMyAudio() {
     Objects.requireNonNull(mContext.getCurrentActivity()).runOnUiThread(() -> {
-      meetingAudioHelper.switchAudio();
+      if (meetingAudioHelper != null) {
+        meetingAudioHelper.switchAudio();
+      }
     });
   }
 
   @ReactMethod
   public void onOffMyVideo() {
     Objects.requireNonNull(mContext.getCurrentActivity()).runOnUiThread(() -> {
-      meetingVideoHelper.switchVideo();
+      if (meetingVideoHelper != null) {
+        meetingVideoHelper.switchVideo();
+      }
     });
   }
 
   @ReactMethod
   public void switchMyCamera() {
     Objects.requireNonNull(mContext.getCurrentActivity()).runOnUiThread(() -> {
-      meetingVideoHelper.switchCamera();
+      if (meetingVideoHelper != null) {
+        meetingVideoHelper.switchCamera();
+      }
     });
   }
 
@@ -381,7 +389,7 @@ public class RNZoomUsModule extends ReactContextBaseJavaModule implements
   // React LifeCycle
   @Override
   public void onHostDestroy() {
-    Log.d(TAG, "onHostDestroy: ");
+    // Log.d(TAG, "onHostDestroy: ");
     //    mContext.getCurrentActivity().runOnUiThread(new Runnable() {
     //      @Override
     //      public void run() {
@@ -397,12 +405,12 @@ public class RNZoomUsModule extends ReactContextBaseJavaModule implements
 
   @Override
   public void onHostPause() {
-    Log.d(TAG, "onHostPause: ");
+    // Log.d(TAG, "onHostPause: ");
   }
 
   @Override
   public void onHostResume() {
-    Log.d(TAG, "onHostResume: ");
+    // Log.d(TAG, "onHostResume: ");
     Objects.requireNonNull(mContext.getCurrentActivity()).runOnUiThread(() -> {
       if (meetingVideoHelper != null) {
         meetingVideoHelper.checkVideoRotation(mContext);
@@ -415,6 +423,7 @@ public class RNZoomUsModule extends ReactContextBaseJavaModule implements
     if (!mIsObserverRegistered.get() || list == null || list.isEmpty()) {
       return;
     }
+    Log.d(TAG, "onMeetingUserJoin: " + Arrays.toString(list.toArray()));
     Objects.requireNonNull(mContext.getCurrentActivity()).runOnUiThread(() -> {
       for (Long userId : list) {
         MeetingUserEvent event = new MeetingUserEvent(MEETING_USER_JOIN, String.valueOf(userId));
@@ -436,6 +445,7 @@ public class RNZoomUsModule extends ReactContextBaseJavaModule implements
     if (!mIsObserverRegistered.get() || list == null || list.isEmpty()) {
       return;
     }
+    Log.d(TAG, "onMeetingUserLeave: " + Arrays.toString(list.toArray()));
     Objects.requireNonNull(mContext.getCurrentActivity()).runOnUiThread(() -> {
       for (Long userId : list) {
         MeetingUserEvent event = new MeetingUserEvent(MEETING_USER_LEFT, String.valueOf(userId));
@@ -450,26 +460,26 @@ public class RNZoomUsModule extends ReactContextBaseJavaModule implements
 
   @Override
   public void onSilentModeChanged(boolean inSilentMode) {
-    Log.d(TAG, "onSilentModeChanged: " + inSilentMode);
+    // Log.d(TAG, "onSilentModeChanged: " + inSilentMode);
   }
 
   @Override
   public void onUserAudioStatusChanged(long userId) {
-    Log.d(TAG, "onUserAudioStatusChanged: " + userId);
+    // Log.d(TAG, "onUserAudioStatusChanged: " + userId);
   }
 
   @Override
   public void onUserAudioTypeChanged(long userId) {
-    Log.d(TAG, "onUserAudioTypeChanged: " + userId);
+    // Log.d(TAG, "onUserAudioTypeChanged: " + userId);
   }
 
   @Override
   public void onMyAudioSourceTypeChanged(int type) {
-    Log.d(TAG, "onMyAudioSourceTypeChanged: " + type);
+    // Log.d(TAG, "onMyAudioSourceTypeChanged: " + type);
   }
 
   @Override
   public void onUserVideoStatusChanged(long userId) {
-    Log.d(TAG, "onUserVideoStatusChanged: " + userId);
+    // Log.d(TAG, "onUserVideoStatusChanged: " + userId);
   }
 }
