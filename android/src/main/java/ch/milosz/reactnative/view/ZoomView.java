@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -16,6 +17,8 @@ import android.widget.RelativeLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.facebook.react.bridge.LifecycleEventListener;
+import com.facebook.react.bridge.ReactContext;
 import com.glidebitmappool.GlideBitmapPool;
 import com.zipow.videobox.sdk.SDKVideoView;
 
@@ -27,9 +30,14 @@ import us.zoom.sdk.MobileRTCVideoView;
 import us.zoom.sdk.MobileRTCVideoViewManager;
 import us.zoom.sdk.ZoomSDK;
 
-public class ZoomView extends FrameLayout implements SDKVideoView.c {
+public class ZoomView extends FrameLayout implements SDKVideoView.c, LifecycleEventListener {
 
   private static final String TAG = "ZoomView";
+
+  private final MobileRTCVideoUnitRenderInfo renderInfo = new MobileRTCVideoUnitRenderInfo(0, 0, 100, 100) {{
+    aspect_mode = MobileRTCVideoUnitAspectMode.VIDEO_ASPECT_PAN_AND_SCAN;
+  }};
+  private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
   private MobileRTCVideoView mDefaultVideoView;
   private SDKVideoView surfaceView;
@@ -37,6 +45,8 @@ public class ZoomView extends FrameLayout implements SDKVideoView.c {
   private ImageView mThumbnail;
   private String mUserId;
   private Bitmap mThumbnailBitmap;
+
+  private boolean setAttendeeResult;
 
   public ZoomView(@NonNull Context context) {
     this(context, null);
@@ -64,26 +74,26 @@ public class ZoomView extends FrameLayout implements SDKVideoView.c {
       Log.e(TAG, "Failed to get surface video view", e);
     }
     mThumbnail = findViewById(R.id.thumbnail);
+    if (getContext() instanceof ReactContext) {
+      ((ReactContext) getContext()).addLifecycleEventListener(this);
+    }
   }
 
   public void setAttendeeVideoUnit(String userId) {
-    MobileRTCVideoViewManager mDefaultVideoViewMgr = mDefaultVideoView.getVideoViewManager();
-    if (mDefaultVideoViewMgr == null) {
-      return;
-    }
-    if (!TextUtils.isEmpty(mUserId)) {
-      mDefaultVideoViewMgr.removeAttendeeVideoUnit(Long.parseLong(mUserId));
-    }
+    removeVideoUnit();
     if (!TextUtils.isEmpty(userId)) {
       mUserId = userId;
-      MobileRTCVideoUnitRenderInfo renderInfo = new MobileRTCVideoUnitRenderInfo(0, 0, 100, 100);
-      renderInfo.aspect_mode = MobileRTCVideoUnitAspectMode.VIDEO_ASPECT_PAN_AND_SCAN;
-      mDefaultVideoViewMgr.addAttendeeVideoUnit(Long.parseLong(userId), renderInfo);
     }
+    addVideoUnit(true);
   }
 
   @Override
   public void surfaceCreated() {
+    if (mUserId == null) {
+      return;
+    }
+    addVideoUnit(false);
+
     // Distract view to wait for video view fully rendered
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       // Show thumbnail is last screenshot video view
@@ -93,7 +103,7 @@ public class ZoomView extends FrameLayout implements SDKVideoView.c {
       setVisibility(GONE);
     }
     // Set delay time for video view show to user
-    new Handler().postDelayed(() -> {
+    mainHandler.postDelayed(() -> {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         // Hide last screenshot thumbnail
         mThumbnail.setVisibility(GONE);
@@ -106,12 +116,14 @@ public class ZoomView extends FrameLayout implements SDKVideoView.c {
 
   @Override
   public void surfaceDestroyed() {
-    if (!TextUtils.isEmpty(mUserId)) {
-      InMeetingUserInfo info = ZoomSDK.getInstance().getInMeetingService().getUserInfoById(Long.parseLong(mUserId));
-      if (info != null && info.getVideoStatus() != null && info.getVideoStatus().isSending()) {
-        screenshotThumbnail();
-      }
+    if (mUserId == null) {
+      return;
     }
+    InMeetingUserInfo info = ZoomSDK.getInstance().getInMeetingService().getUserInfoById(Long.parseLong(mUserId));
+    if (info != null && info.getVideoStatus() != null && info.getVideoStatus().isSending()) {
+      screenshotThumbnail();
+    }
+    removeVideoUnit();
   }
 
   public void screenshotThumbnail() {
@@ -135,7 +147,7 @@ public class ZoomView extends FrameLayout implements SDKVideoView.c {
                 if (copyResult == PixelCopy.SUCCESS) {
                   mThumbnail.setImageBitmap(mThumbnailBitmap);
                 } else {
-                  Log.e(TAG, "screenshotThumbnail: failed to screenshot video view" + copyResult);
+                  // Log.e(TAG, "screenshotThumbnail: failed to screenshot video view" + copyResult);
                 }
               },
               new Handler());
@@ -145,8 +157,58 @@ public class ZoomView extends FrameLayout implements SDKVideoView.c {
     }
   }
 
+  private void addVideoUnit(boolean beforeSurfaceCreated) {
+    if (mUserId == null) {
+      return;
+    }
+    if (beforeSurfaceCreated) {
+      Log.i(TAG, "addVideoUnit: beforeSurfaceCreated");
+    } else {
+      Log.i(TAG, "addVideoUnit: onSurfaceCreated");
+    }
+    if (!setAttendeeResult) {
+      MobileRTCVideoViewManager mDefaultVideoViewMgr = mDefaultVideoView.getVideoViewManager();
+      if (mDefaultVideoViewMgr != null) {
+        setAttendeeResult = mDefaultVideoViewMgr.addAttendeeVideoUnit(Long.parseLong(mUserId), renderInfo);
+        Log.i(TAG, "addVideoUnit: " + mUserId + " result :" + setAttendeeResult);
+      }
+    } else {
+      Log.i(TAG, "addVideoUnit: already set");
+    }
+  }
+
+  private void removeVideoUnit() {
+    if (mUserId == null) {
+      return;
+    }
+    MobileRTCVideoViewManager mDefaultVideoViewMgr = mDefaultVideoView.getVideoViewManager();
+    if (mDefaultVideoViewMgr != null) {
+      Log.i(TAG, "removeVideoUnit: " + mUserId);
+      mDefaultVideoViewMgr.removeAttendeeVideoUnit(Long.parseLong(mUserId));
+    }
+    setAttendeeResult = false;
+  }
 
   @Override
   public void beforeGLContextDestroyed() {
+  }
+
+  @Override
+  public void onHostResume() {
+    if (mDefaultVideoView != null) {
+      mDefaultVideoView.onResume();
+    }
+  }
+
+  @Override
+  public void onHostPause() {
+    if (mDefaultVideoView != null) {
+      mDefaultVideoView.onPause();
+    }
+  }
+
+  @Override
+  public void onHostDestroy() {
+
   }
 }
