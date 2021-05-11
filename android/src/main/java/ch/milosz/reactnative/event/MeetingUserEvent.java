@@ -3,6 +3,8 @@ package ch.milosz.reactnative.event;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 
+import ch.milosz.reactnative.ZoomConstants;
+
 public class MeetingUserEvent extends BaseMeetingEvent {
 
   private final String userID;
@@ -40,19 +42,19 @@ public class MeetingUserEvent extends BaseMeetingEvent {
   public WritableMap toParams() {
     WritableMap params = new WritableNativeMap();
     params.putString("event", event);
-    params.putString("userID", userID);
-    params.putString("userName", userName);
+    params.putString(ZoomConstants.ARG_USER_ID, userID);
+    params.putString(ZoomConstants.ARG_USER_NAME, userName);
     if (videoStatus != null) {
-      params.putBoolean("videoStatus", videoStatus);
+      params.putBoolean(ZoomConstants.ARG_VIDEO_STATUS, videoStatus);
     }
     if (audioStatus != null) {
-      params.putBoolean("audioStatus", audioStatus);
+      params.putBoolean(ZoomConstants.ARG_AUDIO_STATUS, audioStatus);
     }
     if (videoRatio != null) {
-      params.putString("videoRatio", videoRatio);
+      params.putString(ZoomConstants.ARG_VIDEO_RATIO, videoRatio);
     }
     if (isHost != null) {
-      params.putBoolean("isHost", isHost);
+      params.putBoolean(ZoomConstants.ARG_IS_HOST, isHost);
     }
     return params;
   }

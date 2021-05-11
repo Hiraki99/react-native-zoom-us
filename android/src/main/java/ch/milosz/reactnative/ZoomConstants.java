@@ -10,4 +10,8 @@ public @interface ZoomConstants {
 
   String ARG_USER_ID = "userID";
   String ARG_AVATAR_PATH = "avatarPath";
+  String ARG_VIDEO_STATUS = "videoStatus";
+  String ARG_AUDIO_STATUS = "audioStatus";
+  String ARG_VIDEO_RATIO = "videoRatio";
+  String ARG_IS_HOST = "isHost";
 }

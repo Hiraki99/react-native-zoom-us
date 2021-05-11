@@ -1,11 +1,16 @@
 package ch.milosz.reactnative.audio;
 
 
+import android.util.Log;
+
 import us.zoom.sdk.InMeetingAudioController;
 import us.zoom.sdk.InMeetingService;
+import us.zoom.sdk.MobileRTCSDKError;
 import us.zoom.sdk.ZoomSDK;
 
 public class MeetingAudioHelper {
+
+    private static final String TAG = "MeetingAudioHelper";
 
     private InMeetingAudioController mInMeetingAudioController;
 
@@ -26,20 +31,23 @@ public class MeetingAudioHelper {
         mInMeetingService = ZoomSDK.getInstance().getInMeetingService();
     }
 
-    public void switchAudio() {
+    public void switchAudio(boolean mute) {
         if (null == callBack || !callBack.requestAudioPermission()) {
             return;
         }
-        if (isAudioConnected()) {
+        if (!isAudioConnected()) {
+            connectAudioWithVoIP();
+        }
+        if (mute) {
+            Log.d(TAG, "switchAudio: off" );
+            muteMyAudio(true);
+        } else {
             if (isMyAudioMuted()) {
                 if (canUnmuteMyAudio()) {
+                    Log.d(TAG, "switchAudio: on" );
                     muteMyAudio(false);
                 }
-            } else {
-                muteMyAudio(true);
             }
-        } else {
-            connectAudioWithVoIP();
         }
     }
 

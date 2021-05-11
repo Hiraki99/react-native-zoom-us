@@ -1,7 +1,6 @@
 package ch.milosz.reactnative;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 
 import androidx.annotation.NonNull;
@@ -37,7 +36,6 @@ public class ZoomViewManager extends SimpleViewManager<ZoomView> {
 
   @ReactProp(name = "userID")
   public void setAttendeeVideoUnit(ZoomView view, String userID) {
-    Log.d("=======>", "setAttendeeVideoUnit: " + userID);
     view.setAttendeeVideoUnit(userID);
   }
 }

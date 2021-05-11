@@ -197,7 +197,7 @@ public class RNZoomUsModule extends ReactContextBaseJavaModule implements
       for (int i = 0; i < permissions.length; i++) {
         if (Manifest.permission.RECORD_AUDIO.equals(permissions[i])) {
           if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
-            meetingAudioHelper.switchAudio();
+            meetingAudioHelper.switchAudio(false);
           }
         } else if (Manifest.permission.CAMERA.equals(permissions[i])) {
           if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
@@ -310,12 +310,13 @@ public class RNZoomUsModule extends ReactContextBaseJavaModule implements
         InMeetingUserInfo info = mZoomSDK.getInMeetingService().getUserInfoById(userId);
         if (info != null) {
           WritableMap params = new WritableNativeMap();
-          params.putString("userID", String.valueOf(userId));
-          params.putString("userName", info.getUserName());
-          params.putBoolean("videoStatus", info.getVideoStatus() != null && info.getVideoStatus().isSending());
-          params.putBoolean("audioStatus", info.getAudioStatus() != null && info.getAudioStatus().isTalking());
-          params.putString("videoRatio", "1.0");
-          params.putBoolean("isHost", info.getInMeetingUserRole() == InMeetingUserInfo.InMeetingUserRole.USERROLE_HOST);
+          params.putString(ZoomConstants.ARG_USER_ID, String.valueOf(info.getUserId()));
+          params.putString(ZoomConstants.ARG_USER_NAME, info.getUserName());
+          params.putString(ZoomConstants.ARG_AVATAR_PATH, info.getAvatarPath());
+          params.putBoolean(ZoomConstants.ARG_VIDEO_STATUS, info.getVideoStatus() != null && info.getVideoStatus().isSending());
+          params.putBoolean(ZoomConstants.ARG_AUDIO_STATUS, info.getAudioStatus() != null && info.getAudioStatus().isTalking());
+          params.putString(ZoomConstants.ARG_VIDEO_RATIO, "1.0");
+          params.putBoolean(ZoomConstants.ARG_IS_HOST, info.getInMeetingUserRole() == InMeetingUserInfo.InMeetingUserRole.USERROLE_HOST);
           array.pushMap(params);
         } else {
           Log.e(TAG, "failed to getUserInfo: " + userId);
@@ -331,12 +332,21 @@ public class RNZoomUsModule extends ReactContextBaseJavaModule implements
       return;
     }
     Objects.requireNonNull(mContext.getCurrentActivity()).runOnUiThread(() -> {
-      InMeetingUserInfo info = mZoomSDK.getInMeetingService().getUserInfoById(Long.parseLong(userId));
+      InMeetingUserInfo info;
+      if ("local_user".equals(userId)) {
+        info = mZoomSDK.getInMeetingService().getMyUserInfo();
+      } else {
+        info = mZoomSDK.getInMeetingService().getUserInfoById(Long.parseLong(userId));
+      }
       if (info != null) {
         WritableMap map = new WritableNativeMap();
         map.putString(ZoomConstants.ARG_USER_ID, String.valueOf(info.getUserId()));
         map.putString(ZoomConstants.ARG_USER_NAME, info.getUserName());
         map.putString(ZoomConstants.ARG_AVATAR_PATH, info.getAvatarPath());
+        map.putBoolean(ZoomConstants.ARG_VIDEO_STATUS, info.getVideoStatus() != null && info.getVideoStatus().isSending());
+        map.putBoolean(ZoomConstants.ARG_AUDIO_STATUS, info.getAudioStatus() != null && info.getAudioStatus().isTalking());
+        map.putString(ZoomConstants.ARG_VIDEO_RATIO, "1.0");
+        map.putBoolean(ZoomConstants.ARG_IS_HOST, info.getInMeetingUserRole() == InMeetingUserInfo.InMeetingUserRole.USERROLE_HOST);
         callback.invoke(null, map);
       } else {
         Log.e(TAG, "failed to getUserInfo: " + userId);
@@ -346,18 +356,20 @@ public class RNZoomUsModule extends ReactContextBaseJavaModule implements
 
   @ReactMethod
   public void onMyAudio() {
+    Log.d(TAG, "onMyAudio: ");
     Objects.requireNonNull(mContext.getCurrentActivity()).runOnUiThread(() -> {
       if (meetingAudioHelper != null) {
-        meetingAudioHelper.switchAudio();
+        meetingAudioHelper.switchAudio(false);
       }
     });
   }
 
   @ReactMethod
   public void offMyAudio() {
+    Log.d(TAG, "offMyAudio: ");
     Objects.requireNonNull(mContext.getCurrentActivity()).runOnUiThread(() -> {
       if (meetingAudioHelper != null) {
-        meetingAudioHelper.switchAudio();
+        meetingAudioHelper.switchAudio(true);
       }
     });
   }
@@ -493,4 +505,5 @@ public class RNZoomUsModule extends ReactContextBaseJavaModule implements
   public void onUserVideoStatusChanged(long userId) {
     // Log.d(TAG, "onUserVideoStatusChanged: " + userId);
   }
+
 }
