@@ -80,11 +80,12 @@ public class ZoomView extends FrameLayout implements SDKVideoView.c, LifecycleEv
   }
 
   public void setAttendeeVideoUnit(String userId) {
-    removeVideoUnit();
     if (!TextUtils.isEmpty(userId)) {
       mUserId = userId;
+      addVideoUnit(true);
+    } else {
+      removeVideoUnit();
     }
-    addVideoUnit(true);
   }
 
   @Override
@@ -161,19 +162,19 @@ public class ZoomView extends FrameLayout implements SDKVideoView.c, LifecycleEv
     if (mUserId == null) {
       return;
     }
-    if (beforeSurfaceCreated) {
-      Log.i(TAG, "addVideoUnit: beforeSurfaceCreated");
-    } else {
-      Log.i(TAG, "addVideoUnit: onSurfaceCreated");
-    }
     if (!setAttendeeResult) {
       MobileRTCVideoViewManager mDefaultVideoViewMgr = mDefaultVideoView.getVideoViewManager();
       if (mDefaultVideoViewMgr != null) {
         setAttendeeResult = mDefaultVideoViewMgr.addAttendeeVideoUnit(Long.parseLong(mUserId), renderInfo);
-        Log.i(TAG, "addVideoUnit: " + mUserId + " result :" + setAttendeeResult);
+        Log.i(TAG, "addVideoUnit on pros: " + beforeSurfaceCreated + " id: " + mUserId + " result :" + setAttendeeResult);
       }
     } else {
-      Log.i(TAG, "addVideoUnit: already set");
+      Log.i(TAG, "addVideoUnit: already set just update");
+      MobileRTCVideoViewManager mDefaultVideoViewMgr = mDefaultVideoView.getVideoViewManager();
+      if (mDefaultVideoViewMgr != null) {
+        mDefaultVideoViewMgr.updateAttendeeVideoUnit(Long.parseLong(mUserId), renderInfo);
+        Log.i(TAG, "updateVideoUnit on pros: " + beforeSurfaceCreated);
+      }
     }
   }
 
