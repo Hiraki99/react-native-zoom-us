@@ -1,7 +1,12 @@
 package ch.milosz.reactnative;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.util.Log;
 import android.widget.PopupWindow;
@@ -74,10 +79,25 @@ public class RNZoomUsModule extends ReactContextBaseJavaModule implements
 
   private final ReactContext mContext;
   private final AtomicBoolean mIsObserverRegistered = new AtomicBoolean(false);
+  private final IntentFilter filter = new IntentFilter("onConfigurationChanged");
   private ZoomSDK mZoomSDK;
   private MeetingAudioHelper meetingAudioHelper;
   private MeetingVideoHelper meetingVideoHelper;
   private Callback mInitCallback;
+
+  private final BroadcastReceiver orientationReceiver = new BroadcastReceiver() {
+    @Override
+    public void onReceive(Context context, Intent intent) {
+      Configuration configuration = intent.getParcelableExtra("newConfig");
+      if (configuration != null) {
+        Objects.requireNonNull(mContext.getCurrentActivity()).runOnUiThread(() -> {
+          if (meetingVideoHelper != null) {
+            meetingVideoHelper.checkVideoRotation(mContext);
+          }
+        });
+      }
+    }
+  };
 
   public RNZoomUsModule(ReactApplicationContext context) {
     super(context);
@@ -428,17 +448,19 @@ public class RNZoomUsModule extends ReactContextBaseJavaModule implements
 
   @Override
   public void onHostPause() {
-    // Log.d(TAG, "onHostPause: ");
+    Log.d(TAG, "onHostPause: ");
+    this.mContext.unregisterReceiver(orientationReceiver);
   }
 
   @Override
   public void onHostResume() {
-    // Log.d(TAG, "onHostResume: ");
+    Log.d(TAG, "onHostResume: ");
     Objects.requireNonNull(mContext.getCurrentActivity()).runOnUiThread(() -> {
       if (meetingVideoHelper != null) {
         meetingVideoHelper.checkVideoRotation(mContext);
       }
     });
+    this.mContext.registerReceiver(orientationReceiver, filter);
   }
 
   @Override
