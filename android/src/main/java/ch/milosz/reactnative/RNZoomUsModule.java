@@ -28,7 +28,6 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-import com.facebook.react.modules.core.PermissionListener;
 
 import java.util.Arrays;
 import java.util.List;
@@ -64,7 +63,6 @@ public class RNZoomUsModule extends ReactContextBaseJavaModule implements
         MeetingServiceListener,
         InitAuthSDKCallback,
         LifecycleEventListener,
-        PermissionListener,
         MeetingAudioCallback.AudioEvent,
         MeetingVideoCallback.VideoEvent,
         MeetingUserCallback.UserEvent {
@@ -79,20 +77,47 @@ public class RNZoomUsModule extends ReactContextBaseJavaModule implements
 
   private final ReactContext mContext;
   private final AtomicBoolean mIsObserverRegistered = new AtomicBoolean(false);
-  private final IntentFilter filter = new IntentFilter("onConfigurationChanged");
+  private final IntentFilter filter = new IntentFilter() {{
+    addAction("onConfigurationChanged");
+    addAction("onRequestPermissionsResult");
+  }};
   private ZoomSDK mZoomSDK;
   private MeetingAudioHelper meetingAudioHelper;
   private MeetingVideoHelper meetingVideoHelper;
   private Callback mInitCallback;
 
-  private final BroadcastReceiver orientationReceiver = new BroadcastReceiver() {
+  private final BroadcastReceiver moduleConfigReceiver = new BroadcastReceiver() {
     @Override
     public void onReceive(Context context, Intent intent) {
-      Configuration configuration = intent.getParcelableExtra("newConfig");
-      if (configuration != null) {
+      if (mContext.getCurrentActivity() == null) {
+        return;
+      }
+      if ("onConfigurationChanged".equals(intent.getAction())) {
+        Configuration configuration = intent.getParcelableExtra("newConfig");
+        if (configuration != null) {
+          Objects.requireNonNull(mContext.getCurrentActivity()).runOnUiThread(() -> {
+            if (meetingVideoHelper != null) {
+              meetingVideoHelper.checkVideoRotation(mContext);
+            }
+          });
+        }
+      } else if ("onRequestPermissionsResult".equals(intent.getAction())) {
+        String[] permissions = intent.getStringArrayExtra("permissions");
+        int[] grantResults = intent.getIntArrayExtra("grantResults");
+        if (permissions == null || grantResults == null) {
+          return;
+        }
         Objects.requireNonNull(mContext.getCurrentActivity()).runOnUiThread(() -> {
-          if (meetingVideoHelper != null) {
-            meetingVideoHelper.checkVideoRotation(mContext);
+          for (int i = 0; i < permissions.length; i++) {
+            if (Manifest.permission.RECORD_AUDIO.equals(permissions[i])) {
+              if (grantResults[i] == PackageManager.PERMISSION_GRANTED && meetingAudioHelper != null) {
+                meetingAudioHelper.switchAudio(false);
+              }
+            } else if (Manifest.permission.CAMERA.equals(permissions[i]) && meetingVideoHelper != null) {
+              if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
+                meetingVideoHelper.onVideo();
+              }
+            }
           }
         });
       }
@@ -205,29 +230,6 @@ public class RNZoomUsModule extends ReactContextBaseJavaModule implements
     } catch (Throwable e) {
       return PackageManager.PERMISSION_DENIED;
     }
-  }
-
-  @Override
-  public boolean onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-    if (permissions == null || grantResults == null) {
-      return false;
-    }
-
-    Objects.requireNonNull(mContext.getCurrentActivity()).runOnUiThread(() -> {
-      for (int i = 0; i < permissions.length; i++) {
-        if (Manifest.permission.RECORD_AUDIO.equals(permissions[i])) {
-          if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
-            meetingAudioHelper.switchAudio(false);
-          }
-        } else if (Manifest.permission.CAMERA.equals(permissions[i])) {
-          if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
-            meetingVideoHelper.switchVideo();
-          }
-        }
-      }
-    });
-
-    return true;
   }
 
   InMeetingNotificationHandle handle = (context, intent) -> true;
@@ -432,24 +434,13 @@ public class RNZoomUsModule extends ReactContextBaseJavaModule implements
   // React LifeCycle
   @Override
   public void onHostDestroy() {
-    // Log.d(TAG, "onHostDestroy: ");
-    //    mContext.getCurrentActivity().runOnUiThread(new Runnable() {
-    //      @Override
-    //      public void run() {
-    //        if (mZoomSDK.isInitialized()) {
-    //          MeetingService meetingService = mZoomSDK.getMeetingService();
-    //          meetingService.removeListener(RNZoomUsModule.this);
-    //          InMeetingService inMeetingService = mZoomSDK.getInMeetingService();
-    //          inMeetingService.removeListener(RNZoomUsModule.this);
-    //        }
-    //      }
-    //    });
+    Log.d(TAG, "onHostDestroy: ");
+    this.mContext.unregisterReceiver(moduleConfigReceiver);
   }
 
   @Override
   public void onHostPause() {
     Log.d(TAG, "onHostPause: ");
-    this.mContext.unregisterReceiver(orientationReceiver);
   }
 
   @Override
@@ -460,7 +451,7 @@ public class RNZoomUsModule extends ReactContextBaseJavaModule implements
         meetingVideoHelper.checkVideoRotation(mContext);
       }
     });
-    this.mContext.registerReceiver(orientationReceiver, filter);
+    this.mContext.registerReceiver(moduleConfigReceiver, filter);
   }
 
   @Override

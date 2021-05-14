@@ -6,9 +6,6 @@ import android.view.Display;
 import android.view.WindowManager;
 import android.widget.PopupWindow;
 
-import java.util.List;
-
-import us.zoom.sdk.CameraDevice;
 import us.zoom.sdk.InMeetingVideoController;
 import us.zoom.sdk.ZoomSDK;
 
@@ -42,6 +39,17 @@ public class MeetingVideoHelper {
     mInMeetingVideoController.rotateMyVideo(displayRotation);
   }
 
+  public void onVideo() {
+    if (null == callBack || !callBack.requestVideoPermission()) {
+      return;
+    }
+    if (mInMeetingVideoController.isMyVideoMuted()) {
+      if (mInMeetingVideoController.canUnmuteMyVideo()) {
+        mInMeetingVideoController.muteMyVideo(false);
+      }
+    }
+  }
+
   public void switchVideo() {
     if (null == callBack || !callBack.requestVideoPermission()) {
       return;
@@ -58,14 +66,14 @@ public class MeetingVideoHelper {
   public void switchCamera() {
     if (mInMeetingVideoController.canSwitchCamera()) {
       mInMeetingVideoController.switchToNextCamera();
-//      List<CameraDevice> devices = mInMeetingVideoController.getCameraDeviceList();
-//      if (devices != null && devices.size() > 1) {
-//        if (null != callBack) {
-//          callBack.showCameraList(null);
-//        }
-//      } else {
-//        mInMeetingVideoController.switchToNextCamera();
-//      }
+      //      List<CameraDevice> devices = mInMeetingVideoController.getCameraDeviceList();
+      //      if (devices != null && devices.size() > 1) {
+      //        if (null != callBack) {
+      //          callBack.showCameraList(null);
+      //        }
+      //      } else {
+      //        mInMeetingVideoController.switchToNextCamera();
+      //      }
     }
   }
 }
