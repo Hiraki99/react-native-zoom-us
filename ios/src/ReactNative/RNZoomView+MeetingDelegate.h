@@ -17,17 +17,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)onSinkMeetingActiveVideo:(NSUInteger)userID;
 
-- (void)onSinkMeetingAudioStatusChange:(NSUInteger)userID;
+- (void)onSinkMeetingAudioStatusChange:(NSUInteger)userID audioStatus:(MobileRTC_AudioStatus)audioStatus;
 
 - (void)onSinkMeetingMyAudioTypeChange;
 
-- (void)onSinkMeetingVideoStatusChange:(NSUInteger)userID;
+- (void) onSinkMeetingVideoStatusChange:(NSUInteger)userID videoStatus:(MobileRTC_VideoStatus)videoStatus;
 
 - (void)onMyVideoStateChange;
 
 - (void)onSinkMeetingUserJoin:(NSUInteger)userID;
 
-- (void)onSinkMeetingUserLeft:(NSUInteger)userID;
+- (void)onSinkMeetingUserLeft:(NSUInteger)userIonSinkMeetingAudioStatusChangeD;
 
 - (void)onSinkMeetingActiveShare:(NSUInteger)userID;
 

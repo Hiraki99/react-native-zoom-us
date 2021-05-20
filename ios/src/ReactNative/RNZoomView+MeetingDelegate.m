@@ -18,7 +18,7 @@
 {
 }
 
-- (void)onSinkMeetingAudioStatusChange:(NSUInteger)userID
+- (void)onSinkMeetingAudioStatusChange:(NSUInteger)userID audioStatus:(MobileRTC_AudioStatus)audioStatus
 {
 }
 
@@ -26,7 +26,7 @@
 {
 }
 
-- (void)onSinkMeetingVideoStatusChange:(NSUInteger)userID
+- (void)onSinkMeetingVideoStatusChange:(NSUInteger)userID videoStatus:(MobileRTC_VideoStatus)videoStatus
 {
 }
 

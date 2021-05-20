@@ -227,7 +227,8 @@ RCT_EXPORT_METHOD(lowerHand)
                                                       userInfo:userInfo2];
 }
 
-- (void)onSinkMeetingAudioStatusChange:(NSUInteger)userID {
+- (void)onSinkMeetingAudioStatusChange:(NSUInteger)userID audioStatus:(MobileRTC_AudioStatus)audioStatus
+{
     if (userID > 0) {
         MobileRTCMeetingUserInfo *userInfo = [[[MobileRTC sharedRTC] getMeetingService] userInfoByID:userID];
         [self sendEvent:@"onMeetingEvent"
@@ -235,7 +236,9 @@ RCT_EXPORT_METHOD(lowerHand)
                        @"event": @"sinkMeetingAudioStatusChange",
                        @"userID": @(userID),
                        @"userName": userInfo.userName ?: @"",
-                       @"audioStatus": userInfo && userInfo.audioStatus.isMuted ? @0 : @1
+                       @"audioStatus": userInfo && userInfo.audioStatus.isMuted ? @0 : @1,
+                       @"videoStatus": userInfo && userInfo.videoStatus.isSending ? @1 : @0,
+                       @"videoRatio": [self getVideoRatio:userID],
                    }];
     }
 }
@@ -253,7 +256,8 @@ RCT_EXPORT_METHOD(lowerHand)
     }
 }
 
-- (void)onSinkMeetingVideoStatusChange:(NSUInteger)userID {
+- (void)onSinkMeetingVideoStatusChange:(NSUInteger)userID videoStatus:(MobileRTC_VideoStatus)videoStatus
+{
     if (userID > 0) {
         MobileRTCMeetingUserInfo *userInfo = [[[MobileRTC sharedRTC] getMeetingService] userInfoByID:userID];
         

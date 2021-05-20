@@ -52,18 +52,18 @@
     {
         [self.customMeetingVC onSinkMeetingVideoStatusChange:userID];
     }
-    // Phunv: onSinkMeetingVideoStatusChange
-    if (self.rnZoomView) {
-        [self.rnZoomView onSinkMeetingVideoStatusChange:userID];
-    }
-    if ([RNMeetingCenter shared].currentMeetingDelegate) {
-        [[RNMeetingCenter shared].currentMeetingDelegate onSinkMeetingVideoStatusChange:userID];
-    }
 }
 
 - (void)onSinkMeetingVideoStatusChange:(NSUInteger)userID videoStatus:(MobileRTC_VideoStatus)videoStatus
 {
     NSLog(@"onSinkMeetingVideoStatusChange=%@, videoStatus=%@",@(userID), @(videoStatus));
+    // Phunv: onSinkMeetingVideoStatusChange
+    if (self.rnZoomView) {
+        [self.rnZoomView onSinkMeetingVideoStatusChange:userID videoStatus:videoStatus];
+    }
+    if ([RNMeetingCenter shared].currentMeetingDelegate) {
+        [[RNMeetingCenter shared].currentMeetingDelegate onSinkMeetingVideoStatusChange:userID videoStatus:videoStatus];
+    }
 }
 
 - (void)onMyVideoStateChange
@@ -73,12 +73,12 @@
         [self.customMeetingVC onMyVideoStateChange];
     }
     // Phunv: onMyVideoStateChange
-    if (self.rnZoomView) {
-        [self.rnZoomView onMyVideoStateChange];
-    }
-    if ([RNMeetingCenter shared].currentMeetingDelegate) {
-        [[RNMeetingCenter shared].currentMeetingDelegate onMyVideoStateChange];
-    }
+//    if (self.rnZoomView) {
+//        [self.rnZoomView onMyVideoStateChange];
+//    }
+//    if ([RNMeetingCenter shared].currentMeetingDelegate) {
+//        [[RNMeetingCenter shared].currentMeetingDelegate onMyVideoStateChange];
+//    }
 }
 
 - (void)onSinkMeetingVideoQualityChanged:(MobileRTCNetworkQuality)qality userID:(NSUInteger)userID

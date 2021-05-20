@@ -21,18 +21,18 @@
     {
         [self.customMeetingVC onSinkMeetingAudioStatusChange:userID];
     }
-    // Phunv: onSinkMeetingAudioStatusChange
-    if (self.rnZoomView) {
-        [self.rnZoomView onSinkMeetingAudioStatusChange:userID];
-    }
-    if ([RNMeetingCenter shared].currentMeetingDelegate) {
-        [[RNMeetingCenter shared].currentMeetingDelegate onSinkMeetingAudioStatusChange:userID];
-    }
 }
 
 - (void)onSinkMeetingAudioStatusChange:(NSUInteger)userID audioStatus:(MobileRTC_AudioStatus)audioStatus
 {
     NSLog(@"onSinkMeetingAudioStatusChange=%@, audioStatus=%@",@(userID), @(audioStatus));
+    // Phunv: onSinkMeetingAudioStatusChange
+    if (self.rnZoomView) {
+        [self.rnZoomView onSinkMeetingAudioStatusChange:userID audioStatus:audioStatus];
+    }
+    if ([RNMeetingCenter shared].currentMeetingDelegate) {
+        [[RNMeetingCenter shared].currentMeetingDelegate onSinkMeetingAudioStatusChange:userID audioStatus:audioStatus];
+    }
 }
 
 - (void)onSinkMeetingMyAudioTypeChange
@@ -42,12 +42,12 @@
         [self.customMeetingVC onSinkMeetingMyAudioTypeChange];
     }
     // Phunv: onSinkMeetingMyAudioTypeChange
-    if (self.rnZoomView) {
-        [self.rnZoomView onSinkMeetingMyAudioTypeChange];
-    }
-    if ([RNMeetingCenter shared].currentMeetingDelegate) {
-        [[RNMeetingCenter shared].currentMeetingDelegate onSinkMeetingMyAudioTypeChange];
-    }
+//    if (self.rnZoomView) {
+//        [self.rnZoomView onSinkMeetingMyAudioTypeChange];
+//    }
+//    if ([RNMeetingCenter shared].currentMeetingDelegate) {
+//        [[RNMeetingCenter shared].currentMeetingDelegate onSinkMeetingMyAudioTypeChange];
+//    }
 }
 
 - (void)onMyAudioStateChange
@@ -57,12 +57,12 @@
         [self.customMeetingVC onSinkMeetingAudioStatusChange:0];
     }
     // Phunv: onSinkMeetingAudioStatusChange
-    if (self.rnZoomView) {
-        [self.rnZoomView onSinkMeetingAudioStatusChange:0];
-    }
-    if ([RNMeetingCenter shared].currentMeetingDelegate) {
-        [[RNMeetingCenter shared].currentMeetingDelegate onSinkMeetingAudioStatusChange:0];
-    }
+//    if (self.rnZoomView) {
+//        [self.rnZoomView onSinkMeetingAudioStatusChange:0];
+//    }
+//    if ([RNMeetingCenter shared].currentMeetingDelegate) {
+//        [[RNMeetingCenter shared].currentMeetingDelegate onSinkMeetingAudioStatusChange:0];
+//    }
 }
 
 // Phunv: Comment doan code #if nay nhe
