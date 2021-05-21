@@ -9,7 +9,6 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.PixelCopy;
-import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -64,11 +63,10 @@ public class ZoomView extends FrameLayout implements SDKVideoView.c, LifecycleEv
   protected void onFinishInflate() {
     super.onFinishInflate();
     mDefaultVideoView = findViewById(R.id.videoView);
+    mDefaultVideoView.setZOrderMediaOverlay(true);
     MobileRTCVideoView root = mDefaultVideoView.findViewById(R.id.videoView);
     try {
       surfaceView = (SDKVideoView) ((RelativeLayout) root.getChildAt(0)).getChildAt(0);
-      View shareView = ((RelativeLayout) root.getChildAt(0)).getChildAt(1);
-      shareView.setVisibility(GONE);
       surfaceView.setListener(this);
     } catch (Exception e) {
       Log.e(TAG, "Failed to get surface video view", e);
@@ -82,7 +80,7 @@ public class ZoomView extends FrameLayout implements SDKVideoView.c, LifecycleEv
   public void setAttendeeVideoUnit(String userId) {
     if (!TextUtils.isEmpty(userId)) {
       mUserId = userId;
-      addVideoUnit(true);
+      addVideoUnit();
     } else {
       removeVideoUnit();
     }
@@ -93,8 +91,6 @@ public class ZoomView extends FrameLayout implements SDKVideoView.c, LifecycleEv
     if (mUserId == null) {
       return;
     }
-    addVideoUnit(false);
-
     // Distract view to wait for video view fully rendered
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       // Show thumbnail is last screenshot video view
@@ -124,7 +120,6 @@ public class ZoomView extends FrameLayout implements SDKVideoView.c, LifecycleEv
     if (info != null && info.getVideoStatus() != null && info.getVideoStatus().isSending()) {
       screenshotThumbnail();
     }
-    removeVideoUnit();
   }
 
   public void screenshotThumbnail() {
@@ -158,7 +153,7 @@ public class ZoomView extends FrameLayout implements SDKVideoView.c, LifecycleEv
     }
   }
 
-  private void addVideoUnit(boolean beforeSurfaceCreated) {
+  private void addVideoUnit() {
     if (mUserId == null) {
       return;
     }
@@ -166,14 +161,13 @@ public class ZoomView extends FrameLayout implements SDKVideoView.c, LifecycleEv
       MobileRTCVideoViewManager mDefaultVideoViewMgr = mDefaultVideoView.getVideoViewManager();
       if (mDefaultVideoViewMgr != null) {
         setAttendeeResult = mDefaultVideoViewMgr.addAttendeeVideoUnit(Long.parseLong(mUserId), renderInfo);
-        Log.i(TAG, "addVideoUnit on pros: " + beforeSurfaceCreated + " id: " + mUserId + " result :" + setAttendeeResult);
+        Log.i(TAG, "addVideoUnit id: " + mUserId + " result :" + setAttendeeResult);
       }
     } else {
       Log.i(TAG, "addVideoUnit: already set just update");
       MobileRTCVideoViewManager mDefaultVideoViewMgr = mDefaultVideoView.getVideoViewManager();
       if (mDefaultVideoViewMgr != null) {
         mDefaultVideoViewMgr.updateAttendeeVideoUnit(Long.parseLong(mUserId), renderInfo);
-        Log.i(TAG, "updateVideoUnit on pros: " + beforeSurfaceCreated);
       }
     }
   }
@@ -184,7 +178,6 @@ public class ZoomView extends FrameLayout implements SDKVideoView.c, LifecycleEv
     }
     MobileRTCVideoViewManager mDefaultVideoViewMgr = mDefaultVideoView.getVideoViewManager();
     if (mDefaultVideoViewMgr != null) {
-      // Log.i(TAG, "removeVideoUnit: " + mUserId);
       mDefaultVideoViewMgr.removeAllAttendeeVideoUnit();
     }
     setAttendeeResult = false;
