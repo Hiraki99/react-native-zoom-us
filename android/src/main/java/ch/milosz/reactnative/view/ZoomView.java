@@ -184,8 +184,8 @@ public class ZoomView extends FrameLayout implements SDKVideoView.c, LifecycleEv
     }
     MobileRTCVideoViewManager mDefaultVideoViewMgr = mDefaultVideoView.getVideoViewManager();
     if (mDefaultVideoViewMgr != null) {
-      Log.i(TAG, "removeVideoUnit: " + mUserId);
-      mDefaultVideoViewMgr.removeAttendeeVideoUnit(Long.parseLong(mUserId));
+      // Log.i(TAG, "removeVideoUnit: " + mUserId);
+      mDefaultVideoViewMgr.removeAllAttendeeVideoUnit();
     }
     setAttendeeResult = false;
   }

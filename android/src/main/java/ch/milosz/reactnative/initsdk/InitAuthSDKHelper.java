@@ -43,9 +43,9 @@ public class InitAuthSDKHelper implements ZoomSDKInitializeListener {
       ZoomSDKInitParams initParams = new ZoomSDKInitParams();
       initParams.appKey = AuthParams.APP_CLIENT_KEY;
       initParams.appSecret = AuthParams.APP_CLIENT_SECRET;
-      initParams.enableLog = true;
+//      initParams.enableLog = true;
       initParams.enableGenerateDump = true;
-      initParams.logSize = 5;
+//      initParams.logSize = 5;
       initParams.domain = AuthParams.WEB_DOMAIN;
       initParams.videoRawDataMemoryMode = ZoomSDKRawDataMemoryMode.ZoomSDKRawDataMemoryModeStack;
       mZoomSDK.initialize(context, this, initParams);
