@@ -1,7 +1,7 @@
 
 Pod::Spec.new do |s|
   s.name         = "RNZoomUs"
-  s.version      = "2.0.16"
+  s.version      = "2.0.17"
   s.summary      = "RNZoomUs"
   s.description  = <<-DESC
                   React Native integration for Zoom SDK

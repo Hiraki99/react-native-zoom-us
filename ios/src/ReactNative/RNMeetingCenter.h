@@ -55,6 +55,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)shared;
 
 @property (nonatomic, assign) BOOL canSendEvent;
+@property (nonatomic, strong) NSMutableDictionary *mapActiveAudio;
+@property (nonatomic, strong) NSMutableDictionary *mapActiveVideo;
 @property (nonatomic, strong) NSDictionary *zoomClientInfo;
 @property (nonatomic, strong) NSDictionary *meetingInfo;
 @property (nonatomic, weak) id<MeetingDelegate> currentMeetingDelegate;

@@ -50,6 +50,8 @@
         self.isJoinedRoom = NO;
         self.currentActiveShareUser = 0;
         self.currentActiveVideoUser = 0;
+        self.mapActiveAudio = [NSMutableDictionary new];
+        self.mapActiveVideo = [NSMutableDictionary new];
     }
     return self;
 }

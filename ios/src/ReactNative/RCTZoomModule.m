@@ -22,6 +22,8 @@ RCT_EXPORT_METHOD(initZoomSDK:(NSDictionary *) clientInfo callback:(RCTResponseS
 
 RCT_EXPORT_METHOD(joinMeeting:(NSDictionary *) meetingInfo)
 {
+    [[RNMeetingCenter shared].mapActiveVideo removeAllObjects];
+    [[RNMeetingCenter shared].mapActiveAudio removeAllObjects];
     [RNMeetingCenter shared].currentMeetingDelegate = self;
     [[RNMeetingCenter shared] joinMeeting:meetingInfo];
 }
@@ -169,6 +171,8 @@ RCT_EXPORT_METHOD(lowerHand)
             [RNMeetingCenter shared].isJoinedRoom = NO;
             [RNMeetingCenter shared].currentActiveShareUser = 0;
             [RNMeetingCenter shared].currentActiveVideoUser = 0;
+            [[RNMeetingCenter shared].mapActiveVideo removeAllObjects];
+            [[RNMeetingCenter shared].mapActiveAudio removeAllObjects];
             [[LastFrameManager sharedManager] resetCaptures];
             return @"meeting_end";
         case MobileRTCMeetingState_Unknow:///<Unknown status.
@@ -215,12 +219,12 @@ RCT_EXPORT_METHOD(lowerHand)
     }
     MobileRTCMeetingUserInfo *userInfo = [[[MobileRTC sharedRTC] getMeetingService] userInfoByID:userID];
     
-    [self sendEvent:@"onMeetingEvent"
-               body:@{
-                   @"event": @"sinkMeetingActiveVideo",
-                   @"userID": @(userID),
-                   @"userName": userInfo.userName ?: @""
-               }];
+//    [self sendEvent:@"onMeetingEvent"
+//               body:@{
+//                   @"event": @"sinkMeetingActiveVideo",
+//                   @"userID": @(userID),
+//                   @"userName": userInfo.userName ?: @""
+//               }];
     NSDictionary *userInfo2 = @{@"event": @"sinkMeetingActiveVideo", @"userID": @(userID)};
     [[NSNotificationCenter defaultCenter] postNotificationName:@"onMeetingEvent"
                                                         object:nil
@@ -231,15 +235,27 @@ RCT_EXPORT_METHOD(lowerHand)
 {
     if (userID > 0) {
         MobileRTCMeetingUserInfo *userInfo = [[[MobileRTC sharedRTC] getMeetingService] userInfoByID:userID];
-        [self sendEvent:@"onMeetingEvent"
-                   body:@{
-                       @"event": @"sinkMeetingAudioStatusChange",
-                       @"userID": @(userID),
-                       @"userName": userInfo.userName ?: @"",
-                       @"audioStatus": userInfo && userInfo.audioStatus.isMuted ? @0 : @1,
-                       @"videoStatus": userInfo && userInfo.videoStatus.isSending ? @1 : @0,
-                       @"videoRatio": [self getVideoRatio:userID],
-                   }];
+        if (userInfo) {
+            BOOL currentMuted = !([RNMeetingCenter shared].mapActiveAudio[@(userID)] != nil);
+            BOOL newMuted = userInfo.audioStatus.isMuted;
+            if (newMuted != currentMuted) {
+                if (newMuted) {
+                    [[RNMeetingCenter shared].mapActiveAudio removeObjectForKey:@(userID)];
+                }
+                else {
+                    [RNMeetingCenter shared].mapActiveAudio[@(userID)] = @"";
+                }
+                [self sendEvent:@"onMeetingEvent"
+                           body:@{
+                               @"event": @"sinkMeetingAudioStatusChange",
+                               @"userID": @(userID),
+                               @"userName": userInfo.userName ?: @"",
+                               @"audioStatus": newMuted ? @0 : @1,
+                               @"videoStatus": userInfo && userInfo.videoStatus.isSending ? @1 : @0,
+                               @"videoRatio": [self getVideoRatio:userID],
+                           }];
+            }
+        }
     }
 }
 
@@ -261,14 +277,27 @@ RCT_EXPORT_METHOD(lowerHand)
     if (userID > 0) {
         MobileRTCMeetingUserInfo *userInfo = [[[MobileRTC sharedRTC] getMeetingService] userInfoByID:userID];
         
-        [self sendEvent:@"onMeetingEvent"
-                   body:@{
-                       @"event": @"sinkMeetingVideoStatusChange",
-                       @"userID": @(userID),
-                       @"userName": userInfo.userName ?: @"",
-                       @"videoStatus": userInfo && userInfo.videoStatus.isSending ? @1 : @0,
-                       @"videoRatio": [self getVideoRatio:userID]
-                   }];
+        if (userInfo) {
+            BOOL currentMuted = !([RNMeetingCenter shared].mapActiveVideo[@(userID)] != nil);
+            BOOL newMuted = !userInfo.videoStatus.isSending;
+            if (newMuted != currentMuted) {
+                if (newMuted) {
+                    [[RNMeetingCenter shared].mapActiveVideo removeObjectForKey:@(userID)];
+                }
+                else {
+                    [RNMeetingCenter shared].mapActiveVideo[@(userID)] = @"";
+                }
+                [self sendEvent:@"onMeetingEvent"
+                           body:@{
+                               @"event": @"sinkMeetingVideoStatusChange",
+                               @"userID": @(userID),
+                               @"userName": userInfo.userName ?: @"",
+                               @"audioStatus": newMuted ? @0 : @1,
+                               @"videoStatus": userInfo && userInfo.videoStatus.isSending ? @1 : @0,
+                               @"videoRatio": [self getVideoRatio:userID],
+                           }];
+            }
+        }
         
         NSDictionary *userInfo2 = @{@"event": @"sinkMeetingVideoStatusChange", @"userID": @(userID)};
         [[NSNotificationCenter defaultCenter] postNotificationName:@"onMeetingEvent"
