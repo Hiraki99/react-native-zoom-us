@@ -94,7 +94,12 @@ public class ZoomView extends FrameLayout implements SDKVideoView.c, LifecycleEv
     // Distract view to wait for video view fully rendered
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       // Show thumbnail is last screenshot video view
-      mThumbnail.setVisibility(VISIBLE);
+      if (mThumbnail.getDrawable() != null) {
+        mThumbnail.setVisibility(VISIBLE);
+      } else {
+        // Screenshot is not taken yet, hide zoom view to show system user avatar
+        setVisibility(GONE);
+      }
     } else {
       // For Android below 26, screenshot thumbnail don't work well, hide zoom view to show system user avatar
       setVisibility(GONE);
@@ -104,10 +109,9 @@ public class ZoomView extends FrameLayout implements SDKVideoView.c, LifecycleEv
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         // Hide last screenshot thumbnail
         mThumbnail.setVisibility(GONE);
-      } else {
-        // Show zoom view
-        setVisibility(VISIBLE);
       }
+      // Show zoom view
+      setVisibility(VISIBLE);
     }, 1000);
   }
 
