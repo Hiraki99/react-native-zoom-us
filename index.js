@@ -84,8 +84,8 @@ export const onEventListenerZoom = (onEvent = () => {}) =>{
 }
 
 export const removeListenerZoom = () => {
-  subscriptionEvent.remove();
   ZoomModule.stopObserverEvent();
+  eventEmitter.removeAllListeners("onMeetingEvent");
 }
 
 export const toast = (text) => {
