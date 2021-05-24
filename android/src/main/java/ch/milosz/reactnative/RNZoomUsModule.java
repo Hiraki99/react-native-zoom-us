@@ -56,8 +56,10 @@ import us.zoom.sdk.MeetingStatus;
 import us.zoom.sdk.ZoomError;
 import us.zoom.sdk.ZoomSDK;
 
+import static ch.milosz.reactnative.event.EventConstants.MEETING_AUDIO_STATUS_CHANGE;
 import static ch.milosz.reactnative.event.EventConstants.MEETING_USER_JOIN;
 import static ch.milosz.reactnative.event.EventConstants.MEETING_USER_LEFT;
+import static ch.milosz.reactnative.event.EventConstants.MEETING_VIDEO_STATUS_CHANGE;
 
 public class RNZoomUsModule extends ReactContextBaseJavaModule implements
         MeetingServiceListener,
@@ -167,6 +169,7 @@ public class RNZoomUsModule extends ReactContextBaseJavaModule implements
       Objects.requireNonNull(mContext.getCurrentActivity()).runOnUiThread(() -> {
         ZoomSDK.getInstance().getMeetingSettingsHelper().enable720p(false);
         ZoomSDK.getInstance().getMeetingSettingsHelper().setCustomizedMeetingUIEnabled(true);
+        ZoomSDK.getInstance().getMeetingSettingsHelper().setAutoConnectVoIPWhenJoinMeeting(true);
         CustomizedNotificationData data = new CustomizedNotificationData();
         data.setContentTitleId(R.string.notification_title);
         data.setContentTextId(R.string.notification_text);
@@ -501,7 +504,22 @@ public class RNZoomUsModule extends ReactContextBaseJavaModule implements
 
   @Override
   public void onUserAudioStatusChanged(long userId) {
-    // Log.d(TAG, "onUserAudioStatusChanged: " + userId);
+    if (!mIsObserverRegistered.get()) {
+      return;
+    }
+    Log.d(TAG, "onUserAudioStatusChanged: " + userId);
+    Objects.requireNonNull(mContext.getCurrentActivity()).runOnUiThread(() -> {
+      MeetingUserEvent event = new MeetingUserEvent(MEETING_AUDIO_STATUS_CHANGE, String.valueOf(userId));
+      InMeetingUserInfo info = mZoomSDK.getInMeetingService().getUserInfoById(userId);
+      if (info != null) {
+        event.setUserName(info.getUserName());
+        event.setVideoStatus(info.getVideoStatus() != null && info.getVideoStatus().isSending());
+        event.setAudioStatus(info.getAudioStatus() != null && info.getAudioStatus().isTalking());
+        event.setVideoRatio("1.0");
+        event.setHost(info.getInMeetingUserRole() == InMeetingUserInfo.InMeetingUserRole.USERROLE_HOST);
+      }
+      sendEvent(event.toParams());
+    });
   }
 
   @Override
@@ -516,7 +534,21 @@ public class RNZoomUsModule extends ReactContextBaseJavaModule implements
 
   @Override
   public void onUserVideoStatusChanged(long userId) {
-    // Log.d(TAG, "onUserVideoStatusChanged: " + userId);
+    if (!mIsObserverRegistered.get()) {
+      return;
+    }
+    Log.d(TAG, "onUserVideoStatusChanged: " + userId);
+    Objects.requireNonNull(mContext.getCurrentActivity()).runOnUiThread(() -> {
+      MeetingUserEvent event = new MeetingUserEvent(MEETING_VIDEO_STATUS_CHANGE, String.valueOf(userId));
+      InMeetingUserInfo info = mZoomSDK.getInMeetingService().getUserInfoById(userId);
+      if (info != null) {
+        event.setUserName(info.getUserName());
+        event.setVideoStatus(info.getVideoStatus() != null && info.getVideoStatus().isSending());
+        event.setAudioStatus(info.getAudioStatus() != null && info.getAudioStatus().isTalking());
+        event.setVideoRatio("1.0");
+        event.setHost(info.getInMeetingUserRole() == InMeetingUserInfo.InMeetingUserRole.USERROLE_HOST);
+      }
+      sendEvent(event.toParams());
+    });
   }
-
 }
