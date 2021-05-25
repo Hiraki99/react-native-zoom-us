@@ -253,6 +253,10 @@ public class RNZoomUsModule extends ReactContextBaseJavaModule implements
         if (meetingVideoHelper != null) {
           meetingVideoHelper.checkVideoRotation(mContext);
         }
+        if (ZoomSDK.getInstance().getInMeetingService() != null) {
+          Log.d(TAG, "onZoomSDKInitializeResult: off Chime");
+          ZoomSDK.getInstance().getInMeetingService().setPlayChimeOnOff(false);
+        }
       });
     }
     if (mIsObserverRegistered.get()) {
@@ -339,7 +343,7 @@ public class RNZoomUsModule extends ReactContextBaseJavaModule implements
           params.putString(ZoomConstants.ARG_USER_NAME, info.getUserName());
           params.putString(ZoomConstants.ARG_AVATAR_PATH, info.getAvatarPath());
           params.putBoolean(ZoomConstants.ARG_VIDEO_STATUS, info.getVideoStatus() != null && info.getVideoStatus().isSending());
-          params.putBoolean(ZoomConstants.ARG_AUDIO_STATUS, info.getAudioStatus() != null && info.getAudioStatus().isTalking());
+          params.putBoolean(ZoomConstants.ARG_AUDIO_STATUS, info.getAudioStatus() != null && !info.getAudioStatus().isMuted());
           params.putString(ZoomConstants.ARG_VIDEO_RATIO, "1.0");
           params.putBoolean(ZoomConstants.ARG_IS_HOST, info.getInMeetingUserRole() == InMeetingUserInfo.InMeetingUserRole.USERROLE_HOST);
           array.pushMap(params);
@@ -369,7 +373,7 @@ public class RNZoomUsModule extends ReactContextBaseJavaModule implements
         map.putString(ZoomConstants.ARG_USER_NAME, info.getUserName());
         map.putString(ZoomConstants.ARG_AVATAR_PATH, info.getAvatarPath());
         map.putBoolean(ZoomConstants.ARG_VIDEO_STATUS, info.getVideoStatus() != null && info.getVideoStatus().isSending());
-        map.putBoolean(ZoomConstants.ARG_AUDIO_STATUS, info.getAudioStatus() != null && info.getAudioStatus().isTalking());
+        map.putBoolean(ZoomConstants.ARG_AUDIO_STATUS, info.getAudioStatus() != null && !info.getAudioStatus().isMuted());
         map.putString(ZoomConstants.ARG_VIDEO_RATIO, "1.0");
         map.putBoolean(ZoomConstants.ARG_IS_HOST, info.getInMeetingUserRole() == InMeetingUserInfo.InMeetingUserRole.USERROLE_HOST);
         callback.invoke(null, map);
@@ -470,7 +474,7 @@ public class RNZoomUsModule extends ReactContextBaseJavaModule implements
         if (info != null) {
           event.setUserName(info.getUserName());
           event.setVideoStatus(info.getVideoStatus() != null && info.getVideoStatus().isSending());
-          event.setAudioStatus(info.getAudioStatus() != null && info.getAudioStatus().isTalking());
+          event.setAudioStatus(info.getAudioStatus() != null && !info.getAudioStatus().isMuted());
           event.setVideoRatio("1.0");
           event.setHost(info.getInMeetingUserRole() == InMeetingUserInfo.InMeetingUserRole.USERROLE_HOST);
         }
@@ -514,7 +518,7 @@ public class RNZoomUsModule extends ReactContextBaseJavaModule implements
       if (info != null) {
         event.setUserName(info.getUserName());
         event.setVideoStatus(info.getVideoStatus() != null && info.getVideoStatus().isSending());
-        event.setAudioStatus(info.getAudioStatus() != null && info.getAudioStatus().isTalking());
+        event.setAudioStatus(info.getAudioStatus() != null && !info.getAudioStatus().isMuted());
         event.setVideoRatio("1.0");
         event.setHost(info.getInMeetingUserRole() == InMeetingUserInfo.InMeetingUserRole.USERROLE_HOST);
       }
@@ -544,7 +548,7 @@ public class RNZoomUsModule extends ReactContextBaseJavaModule implements
       if (info != null) {
         event.setUserName(info.getUserName());
         event.setVideoStatus(info.getVideoStatus() != null && info.getVideoStatus().isSending());
-        event.setAudioStatus(info.getAudioStatus() != null && info.getAudioStatus().isTalking());
+        event.setAudioStatus(info.getAudioStatus() != null && !info.getAudioStatus().isMuted());
         event.setVideoRatio("1.0");
         event.setHost(info.getInMeetingUserRole() == InMeetingUserInfo.InMeetingUserRole.USERROLE_HOST);
       }
