@@ -43,13 +43,13 @@
 }
 - (NSString *) getKey {
     if (_userID && _userID.length > 0 && _type) {
-        return [NSString stringWithFormat:@"%@_%@", _userID, _type];
+        return [NSString stringWithFormat:@"%@%@", _userID, _type];
     }
     return @"";
 }
 - (NSString *) getLastKey {
     if (lastUserId && lastUserId.length > 0 && lastType) {
-        return [NSString stringWithFormat:@"%@_%@", lastUserId, lastType];
+        return [NSString stringWithFormat:@"%@%@", lastUserId, lastType];
     }
     return @"";
 }
@@ -64,13 +64,13 @@
         }
         if (hasChange) {
             if (_userID.length > 0 && _rnMeetingView) {
-                if (![[LastFrameManager sharedManager] getLastFrame:[self getKey]]) {
+                if (![[LastFrameManager sharedManager] getLastFrame:[self getKey] withSize:self.bounds.size]) {
                     UIImage *lastFrame = [self captureVideo:_rnMeetingView];
-                    [[LastFrameManager sharedManager] setLastFrame:lastFrame forKey:[self getKey]];
+                    [[LastFrameManager sharedManager] setLastFrame:lastFrame size:self.bounds.size forKey:[self getKey]];
                 } else {
                     if ([_rnMeetingView hasVideo]) {
                         UIImage *lastFrame = [self captureVideo:_rnMeetingView];
-                        [[LastFrameManager sharedManager] setLastFrame:lastFrame forKey:[self getKey]];
+                        [[LastFrameManager sharedManager] setLastFrame:lastFrame size:self.bounds.size forKey:[self getKey]];
                     }
                 }
             }
@@ -170,7 +170,7 @@
         timerHideLastFrame = nil;
     }
     if (_userID && _userID.length > 0) {
-        UIImage *lastFrame = [[LastFrameManager sharedManager] getLastFrame:[self getKey]];
+        UIImage *lastFrame = [[LastFrameManager sharedManager] getLastFrame:[self getKey] withSize:self.bounds.size];
         if (lastFrame) {
             [_captureImage setImage:lastFrame];
             [_captureImage setHidden:NO];
@@ -192,7 +192,7 @@
     }
     else {
         if (lastUserId && lastUserId.length > 0) {
-            UIImage *lastFrame = [[LastFrameManager sharedManager] getLastFrame:[self getLastKey]];
+            UIImage *lastFrame = [[LastFrameManager sharedManager] getLastFrame:[self getLastKey] withSize:self.bounds.size];
             if (lastFrame) {
                 [_captureImage setImage:lastFrame];
                 [_captureImage setHidden:NO];

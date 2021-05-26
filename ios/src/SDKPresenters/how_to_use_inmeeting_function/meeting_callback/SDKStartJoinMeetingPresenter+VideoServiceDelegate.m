@@ -22,12 +22,12 @@
         [self.customMeetingVC onSinkMeetingActiveVideo:userID];
     }
     // Phunv: onSinkMeetingActiveVideo
-    if (self.rnZoomView) {
-        [self.rnZoomView onSinkMeetingActiveVideo:userID];
-    }
-    if ([RNMeetingCenter shared].currentMeetingDelegate) {
-        [[RNMeetingCenter shared].currentMeetingDelegate onSinkMeetingActiveVideo:userID];
-    }
+//    if (self.rnZoomView) {
+//        [self.rnZoomView onSinkMeetingActiveVideo:userID];
+//    }
+//    if ([RNMeetingCenter shared].currentMeetingDelegate) {
+//        [[RNMeetingCenter shared].currentMeetingDelegate onSinkMeetingActiveVideo:userID];
+//    }
 }
 
 - (void)onSinkMeetingPreviewStopped
