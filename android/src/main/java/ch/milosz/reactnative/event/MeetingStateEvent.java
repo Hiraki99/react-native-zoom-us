@@ -7,26 +7,17 @@ import us.zoom.sdk.MeetingStatus;
 
 import static ch.milosz.reactnative.event.EventConstants.MEETING_STATE_CHANGE;
 
-public class MeetingStateEvent extends BaseMeetingEvent {
+public class MeetingStateEvent {
 
-  private final int state;
-  private final String des;
-
-  public MeetingStateEvent(MeetingStatus status) {
-    super(MEETING_STATE_CHANGE);
-    this.state = status.ordinal();
-    this.des = convertStatusToString(status);
+  public static WritableMap toParams(MeetingStatus status) {
+    WritableMap params = new WritableNativeMap();
+    params.putString("event", MEETING_STATE_CHANGE);
+    params.putInt("state", status.ordinal());
+    params.putString("des", convertStatusToString(status));
+    return params;
   }
 
-  public int getState() {
-    return state;
-  }
-
-  public String getDes() {
-    return des;
-  }
-
-  private String convertStatusToString(MeetingStatus state) {
+  private static String convertStatusToString(MeetingStatus state) {
     switch (state) {
       case MEETING_STATUS_IDLE:
         return "no_meeting_running";
@@ -53,13 +44,5 @@ public class MeetingStateEvent extends BaseMeetingEvent {
       default:
         return "";
     }
-  }
-
-  public WritableMap toParams() {
-    WritableMap params = new WritableNativeMap();
-    params.putString("event", event);
-    params.putInt("state", state);
-    params.putString("des", des);
-    return params;
   }
 }

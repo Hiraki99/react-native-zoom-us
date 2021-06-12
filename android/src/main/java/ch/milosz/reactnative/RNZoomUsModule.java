@@ -46,6 +46,7 @@ import ch.milosz.reactnative.video.MeetingVideoCallback;
 import ch.milosz.reactnative.video.MeetingVideoHelper;
 import us.zoom.sdk.CustomizedNotificationData;
 import us.zoom.sdk.InMeetingNotificationHandle;
+import us.zoom.sdk.InMeetingShareController;
 import us.zoom.sdk.InMeetingUserInfo;
 import us.zoom.sdk.JoinMeetingOptions;
 import us.zoom.sdk.JoinMeetingParams;
@@ -56,6 +57,9 @@ import us.zoom.sdk.MeetingStatus;
 import us.zoom.sdk.ZoomError;
 import us.zoom.sdk.ZoomSDK;
 
+import static ch.milosz.reactnative.ZoomConstants.ZoomInstantSDKShareStatus_Start;
+import static ch.milosz.reactnative.ZoomConstants.ZoomInstantSDKShareStatus_Stop;
+import static ch.milosz.reactnative.event.EventConstants.MEETING_ACTIVE_SHARE;
 import static ch.milosz.reactnative.event.EventConstants.MEETING_AUDIO_STATUS_CHANGE;
 import static ch.milosz.reactnative.event.EventConstants.MEETING_USER_JOIN;
 import static ch.milosz.reactnative.event.EventConstants.MEETING_USER_LEFT;
@@ -67,7 +71,7 @@ public class RNZoomUsModule extends ReactContextBaseJavaModule implements
         LifecycleEventListener,
         MeetingAudioCallback.AudioEvent,
         MeetingVideoCallback.VideoEvent,
-        MeetingUserCallback.UserEvent {
+        MeetingUserCallback.UserEvent, InMeetingShareController.InMeetingShareListener {
 
   private static final String TAG = "RNZoomUsModule";
 
@@ -185,6 +189,8 @@ public class RNZoomUsModule extends ReactContextBaseJavaModule implements
         MeetingVideoCallback.getInstance().addListener(this);
         MeetingUserCallback.getInstance().addListener(this);
 
+        ZoomSDK.getInstance().getInMeetingService().getInMeetingShareController().addListener(this);
+
         if (mInitCallback != null) {
           mInitCallback.invoke(true);
         }
@@ -260,8 +266,7 @@ public class RNZoomUsModule extends ReactContextBaseJavaModule implements
       });
     }
     if (mIsObserverRegistered.get()) {
-      MeetingStateEvent event = new MeetingStateEvent(meetingStatus);
-      sendEvent(event.toParams());
+      sendEvent(MeetingStateEvent.toParams(meetingStatus));
     }
   }
 
@@ -269,10 +274,7 @@ public class RNZoomUsModule extends ReactContextBaseJavaModule implements
   public void joinMeeting(ReadableMap data) {
     final String roomNumber = data.getString(ZoomConstants.ARG_ROOM_NUMBER);
     final String roomPassword = data.getString(ZoomConstants.ARG_ROOM_PASSWORD);
-    final String userDisplayName = data.getString(ZoomConstants.ARG_USER_DISPLAY_NAME);
     final String userName = data.getString(ZoomConstants.ARG_USER_NAME);
-    final String email = data.getString(ZoomConstants.ARG_EMAIL);
-    final String userPassword = data.getString(ZoomConstants.ARG_USER_PASSWORD);
 
     Objects.requireNonNull(mContext.getCurrentActivity()).runOnUiThread(() -> {
       if (!mZoomSDK.isInitialized()) {
@@ -469,16 +471,10 @@ public class RNZoomUsModule extends ReactContextBaseJavaModule implements
     Log.d(TAG, "onMeetingUserJoin: " + Arrays.toString(list.toArray()));
     Objects.requireNonNull(mContext.getCurrentActivity()).runOnUiThread(() -> {
       for (Long userId : list) {
-        MeetingUserEvent event = new MeetingUserEvent(MEETING_USER_JOIN, String.valueOf(userId));
         InMeetingUserInfo info = mZoomSDK.getInMeetingService().getUserInfoById(userId);
         if (info != null) {
-          event.setUserName(info.getUserName());
-          event.setVideoStatus(info.getVideoStatus() != null && info.getVideoStatus().isSending());
-          event.setAudioStatus(info.getAudioStatus() != null && !info.getAudioStatus().isMuted());
-          event.setVideoRatio("1.0");
-          event.setHost(info.getInMeetingUserRole() == InMeetingUserInfo.InMeetingUserRole.USERROLE_HOST);
+          sendEvent(MeetingUserEvent.toParams(MEETING_USER_JOIN, info));
         }
-        sendEvent(event.toParams());
       }
     });
   }
@@ -491,12 +487,10 @@ public class RNZoomUsModule extends ReactContextBaseJavaModule implements
     Log.d(TAG, "onMeetingUserLeave: " + Arrays.toString(list.toArray()));
     Objects.requireNonNull(mContext.getCurrentActivity()).runOnUiThread(() -> {
       for (Long userId : list) {
-        MeetingUserEvent event = new MeetingUserEvent(MEETING_USER_LEFT, String.valueOf(userId));
         InMeetingUserInfo info = mZoomSDK.getInMeetingService().getUserInfoById(userId);
         if (info != null) {
-          event.setUserName(info.getUserName());
+          sendEvent(MeetingUserEvent.toParams(MEETING_USER_LEFT, info));
         }
-        sendEvent(event.toParams());
       }
     });
   }
@@ -513,16 +507,10 @@ public class RNZoomUsModule extends ReactContextBaseJavaModule implements
     }
     Log.d(TAG, "onUserAudioStatusChanged: " + userId);
     Objects.requireNonNull(mContext.getCurrentActivity()).runOnUiThread(() -> {
-      MeetingUserEvent event = new MeetingUserEvent(MEETING_AUDIO_STATUS_CHANGE, String.valueOf(userId));
       InMeetingUserInfo info = mZoomSDK.getInMeetingService().getUserInfoById(userId);
       if (info != null) {
-        event.setUserName(info.getUserName());
-        event.setVideoStatus(info.getVideoStatus() != null && info.getVideoStatus().isSending());
-        event.setAudioStatus(info.getAudioStatus() != null && !info.getAudioStatus().isMuted());
-        event.setVideoRatio("1.0");
-        event.setHost(info.getInMeetingUserRole() == InMeetingUserInfo.InMeetingUserRole.USERROLE_HOST);
+        sendEvent(MeetingUserEvent.toParams(MEETING_AUDIO_STATUS_CHANGE, info));
       }
-      sendEvent(event.toParams());
     });
   }
 
@@ -543,16 +531,33 @@ public class RNZoomUsModule extends ReactContextBaseJavaModule implements
     }
     Log.d(TAG, "onUserVideoStatusChanged: " + userId);
     Objects.requireNonNull(mContext.getCurrentActivity()).runOnUiThread(() -> {
-      MeetingUserEvent event = new MeetingUserEvent(MEETING_VIDEO_STATUS_CHANGE, String.valueOf(userId));
       InMeetingUserInfo info = mZoomSDK.getInMeetingService().getUserInfoById(userId);
       if (info != null) {
-        event.setUserName(info.getUserName());
-        event.setVideoStatus(info.getVideoStatus() != null && info.getVideoStatus().isSending());
-        event.setAudioStatus(info.getAudioStatus() != null && !info.getAudioStatus().isMuted());
-        event.setVideoRatio("1.0");
-        event.setHost(info.getInMeetingUserRole() == InMeetingUserInfo.InMeetingUserRole.USERROLE_HOST);
+        sendEvent(MeetingUserEvent.toParams(MEETING_VIDEO_STATUS_CHANGE, info));
       }
-      sendEvent(event.toParams());
     });
+  }
+
+  @Override
+  public void onShareActiveUser(long userId) {
+    if (!mIsObserverRegistered.get()) {
+      return;
+    }
+    Objects.requireNonNull(mContext.getCurrentActivity()).runOnUiThread(() -> {
+      InMeetingShareController controller = ZoomSDK.getInstance().getInMeetingService().getInMeetingShareController();
+      Log.d(TAG, "onShareActiveUser: " + userId);
+      if (controller.isOtherSharing() && controller.isSharingOut() && controller.isSharingScreen()) {
+        InMeetingUserInfo info = mZoomSDK.getInMeetingService().getUserInfoById(userId);
+        if (info != null) {
+          int shareStatus = userId > 0 ? ZoomInstantSDKShareStatus_Start : ZoomInstantSDKShareStatus_Stop;
+          sendEvent(MeetingUserEvent.toParams(MEETING_ACTIVE_SHARE, info, shareStatus));
+        }
+      }
+    });
+  }
+
+  @Override
+  public void onShareUserReceivingStatus(long userId) {
+
   }
 }

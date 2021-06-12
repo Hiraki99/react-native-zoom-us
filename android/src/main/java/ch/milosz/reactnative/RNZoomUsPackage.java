@@ -29,7 +29,8 @@ public class RNZoomUsPackage implements ReactPackage {
   @Override
   public List<ViewManager> createViewManagers(@NonNull ReactApplicationContext reactContext) {
     List<ViewManager> modules = new ArrayList<>();
-    modules.add(new ZoomViewManager(reactContext));
+    modules.add(new ZoomViewManager());
+    modules.add(new ZoomShareViewManager());
     return modules;
   }
 }

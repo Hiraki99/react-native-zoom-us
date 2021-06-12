@@ -3,58 +3,33 @@ package ch.milosz.reactnative.event;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 
-import ch.milosz.reactnative.ZoomConstants;
+import us.zoom.sdk.InMeetingUserInfo;
 
-public class MeetingUserEvent extends BaseMeetingEvent {
+import static ch.milosz.reactnative.ZoomConstants.ARG_AUDIO_STATUS;
+import static ch.milosz.reactnative.ZoomConstants.ARG_IS_HOST;
+import static ch.milosz.reactnative.ZoomConstants.ARG_SHARE_STATUS;
+import static ch.milosz.reactnative.ZoomConstants.ARG_USER_ID;
+import static ch.milosz.reactnative.ZoomConstants.ARG_USER_NAME;
+import static ch.milosz.reactnative.ZoomConstants.ARG_VIDEO_RATIO;
+import static ch.milosz.reactnative.ZoomConstants.ARG_VIDEO_STATUS;
 
-  private final String userID;
-  private String userName;
-  private Boolean videoStatus;
-  private Boolean audioStatus;
-  private String videoRatio;
-  private Boolean isHost;
+public class MeetingUserEvent {
 
-  public MeetingUserEvent(@EventConstants String event, String userID) {
-    super(event);
-    this.userID = userID;
+  public static WritableMap toParams(@EventConstants String event, InMeetingUserInfo info) {
+    return toParams(event, info, null);
   }
 
-  public void setUserName(String userName) {
-    this.userName = userName;
-  }
-
-  public void setVideoStatus(boolean videoStatus) {
-    this.videoStatus = videoStatus;
-  }
-
-  public void setAudioStatus(boolean audioStatus) {
-    this.audioStatus = audioStatus;
-  }
-
-  public void setVideoRatio(String videoRatio) {
-    this.videoRatio = videoRatio;
-  }
-
-  public void setHost(boolean host) {
-    isHost = host;
-  }
-
-  public WritableMap toParams() {
+  public static WritableMap toParams(@EventConstants String event, InMeetingUserInfo info, Integer shareStatus) {
     WritableMap params = new WritableNativeMap();
     params.putString("event", event);
-    params.putString(ZoomConstants.ARG_USER_ID, userID);
-    params.putString(ZoomConstants.ARG_USER_NAME, userName);
-    if (videoStatus != null) {
-      params.putBoolean(ZoomConstants.ARG_VIDEO_STATUS, videoStatus);
-    }
-    if (audioStatus != null) {
-      params.putBoolean(ZoomConstants.ARG_AUDIO_STATUS, audioStatus);
-    }
-    if (videoRatio != null) {
-      params.putString(ZoomConstants.ARG_VIDEO_RATIO, videoRatio);
-    }
-    if (isHost != null) {
-      params.putBoolean(ZoomConstants.ARG_IS_HOST, isHost);
+    params.putString(ARG_USER_ID, String.valueOf(info.getUserId()));
+    params.putString(ARG_USER_NAME, info.getUserName());
+    params.putString(ARG_VIDEO_RATIO, "1.0");
+    params.putBoolean(ARG_VIDEO_STATUS, info.getVideoStatus() != null && info.getVideoStatus().isSending());
+    params.putBoolean(ARG_AUDIO_STATUS, info.getAudioStatus() != null && !info.getAudioStatus().isMuted());
+    params.putBoolean(ARG_IS_HOST, info.getInMeetingUserRole() == InMeetingUserInfo.InMeetingUserRole.USERROLE_HOST);
+    if (shareStatus != null) {
+      params.putInt(ARG_SHARE_STATUS, shareStatus);
     }
     return params;
   }
