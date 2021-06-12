@@ -355,22 +355,33 @@ RCT_EXPORT_METHOD(lowerHand)
 - (void)onSinkMeetingActiveShare:(NSUInteger)userID {
     if (userID > 0) {
         MobileRTCMeetingUserInfo *userInfo = [[[MobileRTC sharedRTC] getMeetingService] userInfoByID:userID];
+        if (userInfo.userName && userInfo.userName.length > 0) {
+            [self sendEvent:@"onMeetingEvent"
+                       body:@{
+                           @"event": @"sinkMeetingActiveShare",
+                           @"userID": @(userID),
+                           @"userName": userInfo.userName ?: @"",
+                           @"shareStatus": @1
+                       }];
+            if (userID > 0) {
+                [RNMeetingCenter shared].currentActiveShareUser = userID;
+            }
+            NSDictionary *notiUserInfo = @{@"event": @"onSinkMeetingActiveShare", @"userID": @(userID)};
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"onMeetingEvent"
+                                                                object:nil
+                                                              userInfo:notiUserInfo];
+        }
+    }
+    else if (userID == 0) {
         [self sendEvent:@"onMeetingEvent"
                    body:@{
                        @"event": @"sinkMeetingActiveShare",
-                       @"userID": @(userID),
-                       @"userName": userInfo.userName ?: @""
+                       @"userID": @(1234),
+                       @"userName": @"1234",
+                       @"shareStatus": @4
                    }];
-        if (userID > 0) {
-            [RNMeetingCenter shared].currentActiveShareUser = userID;
-        }
-        NSDictionary *notiUserInfo = @{@"event": @"onSinkMeetingActiveShare", @"userID": @(userID)};
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"onMeetingEvent"
-                                                            object:nil
-                                                          userInfo:notiUserInfo];
     }
 }
-
 - (void)onSinkShareSizeChange:(NSUInteger)userID {
     if (userID > 0) {
         MobileRTCMeetingUserInfo *userInfo = [[[MobileRTC sharedRTC] getMeetingService] userInfoByID:userID];

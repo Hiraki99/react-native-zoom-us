@@ -38,11 +38,17 @@
 - (void)commonInit
 {
     shareView = [[MobileRTCActiveShareView alloc] initWithFrame:self.bounds];
+    [self addSubview:shareView];
     [shareView setVideoAspect:MobileRTCVideoAspect_PanAndScan];
 }
 - (void)layoutSubviews {
     [super layoutSubviews];
     shareView.frame = self.bounds;
+    if (currentUserID.length > 0) {
+        [shareView stopActiveShare];
+        NSUInteger userIDInt = [currentUserID integerValue];
+        [shareView showActiveShareWithUserID: userIDInt];
+    }
 }
 - (void) setUserID: (NSString *) userID {
     if (userID) {
@@ -56,6 +62,13 @@
             else {
                 [shareView stopActiveShare];
                 currentUserID = userID;
+            }
+        }
+        else {
+            if (currentUserID.length > 0) {
+                [shareView stopActiveShare];
+                NSUInteger userIDInt = [currentUserID integerValue];
+                [shareView showActiveShareWithUserID: userIDInt];
             }
         }
     }
