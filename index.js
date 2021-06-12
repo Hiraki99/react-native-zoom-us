@@ -7,6 +7,7 @@ import {
   NativeEventEmitter,
 } from 'react-native';
 const NativeZoomView = requireNativeComponent('RNZoomView', RNZoomView);
+const NativeShareViewClientSdk = requireNativeComponent('RNShareViewClientSdk', RNShareViewClientSdk);
 const {ZoomModule} = NativeModules;
 const eventEmitter = new NativeEventEmitter(ZoomModule);
 let subscriptionEvent;
@@ -92,6 +93,15 @@ export const toast = (text) => {
   ZoomModule.toast(text);
 }
 
+export const RNShareViewClientSdk = (props) => {
+  return (
+      <NativeShareViewClientSdk
+          style={props.style}
+          userID={props.userID || ''}
+      />
+  );
+};
+
 const RNZoomView = (props) => {
   const {onEvent} = props;
   const nativeZoomViewRef = React.useRef();
@@ -105,3 +115,4 @@ const RNZoomView = (props) => {
 };
 
 export default RNZoomView;
+
