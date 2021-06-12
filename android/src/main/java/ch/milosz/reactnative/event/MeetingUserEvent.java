@@ -19,15 +19,21 @@ public class MeetingUserEvent {
     return toParams(event, info, null);
   }
 
+  public static WritableMap toParams(@EventConstants String event, Integer shareStatus) {
+    return toParams(event, null, shareStatus);
+  }
+
   public static WritableMap toParams(@EventConstants String event, InMeetingUserInfo info, Integer shareStatus) {
     WritableMap params = new WritableNativeMap();
     params.putString("event", event);
-    params.putString(ARG_USER_ID, String.valueOf(info.getUserId()));
-    params.putString(ARG_USER_NAME, info.getUserName());
-    params.putString(ARG_VIDEO_RATIO, "1.0");
-    params.putBoolean(ARG_VIDEO_STATUS, info.getVideoStatus() != null && info.getVideoStatus().isSending());
-    params.putBoolean(ARG_AUDIO_STATUS, info.getAudioStatus() != null && !info.getAudioStatus().isMuted());
-    params.putBoolean(ARG_IS_HOST, info.getInMeetingUserRole() == InMeetingUserInfo.InMeetingUserRole.USERROLE_HOST);
+    if (info != null) {
+      params.putString(ARG_USER_ID, String.valueOf(info.getUserId()));
+      params.putString(ARG_USER_NAME, info.getUserName());
+      params.putString(ARG_VIDEO_RATIO, "1.0");
+      params.putBoolean(ARG_VIDEO_STATUS, info.getVideoStatus() != null && info.getVideoStatus().isSending());
+      params.putBoolean(ARG_AUDIO_STATUS, info.getAudioStatus() != null && !info.getAudioStatus().isMuted());
+      params.putBoolean(ARG_IS_HOST, info.getInMeetingUserRole() == InMeetingUserInfo.InMeetingUserRole.USERROLE_HOST);
+    }
     if (shareStatus != null) {
       params.putInt(ARG_SHARE_STATUS, shareStatus);
     }

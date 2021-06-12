@@ -91,6 +91,7 @@ public class RNZoomUsModule extends ReactContextBaseJavaModule implements
   private MeetingAudioHelper meetingAudioHelper;
   private MeetingVideoHelper meetingVideoHelper;
   private Callback mInitCallback;
+  private long currentShareUserId = -1;
 
   private final BroadcastReceiver moduleConfigReceiver = new BroadcastReceiver() {
     @Override
@@ -545,14 +546,23 @@ public class RNZoomUsModule extends ReactContextBaseJavaModule implements
     }
     Objects.requireNonNull(mContext.getCurrentActivity()).runOnUiThread(() -> {
       InMeetingShareController controller = ZoomSDK.getInstance().getInMeetingService().getInMeetingShareController();
-      Log.d(TAG, "onShareActiveUser: " + userId);
-      if (controller.isOtherSharing() && controller.isSharingOut() && controller.isSharingScreen()) {
+      if (controller.isOtherSharing() && userId > 0) {
         InMeetingUserInfo info = mZoomSDK.getInMeetingService().getUserInfoById(userId);
         if (info != null) {
-          int shareStatus = userId > 0 ? ZoomInstantSDKShareStatus_Start : ZoomInstantSDKShareStatus_Stop;
-          sendEvent(MeetingUserEvent.toParams(MEETING_ACTIVE_SHARE, info, shareStatus));
+          currentShareUserId = userId;
+          sendEvent(MeetingUserEvent.toParams(MEETING_ACTIVE_SHARE, info, ZoomInstantSDKShareStatus_Start));
         }
       }
+      if (userId < 0)
+        if (currentShareUserId > 0) {
+          InMeetingUserInfo info = mZoomSDK.getInMeetingService().getUserInfoById(currentShareUserId);
+          if (info != null) {
+            currentShareUserId = -1;
+            sendEvent(MeetingUserEvent.toParams(MEETING_ACTIVE_SHARE, info, ZoomInstantSDKShareStatus_Stop));
+          }
+        } else {
+          sendEvent(MeetingUserEvent.toParams(MEETING_ACTIVE_SHARE, ZoomInstantSDKShareStatus_Stop));
+        }
     });
   }
 

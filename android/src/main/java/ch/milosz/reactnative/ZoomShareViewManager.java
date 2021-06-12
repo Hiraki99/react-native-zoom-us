@@ -6,12 +6,12 @@ import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.annotations.ReactProp;
 
+import ch.milosz.reactnative.view.ZoomShareView;
 import us.zoom.sdk.MobileRTCVideoUnitRenderInfo;
-import us.zoom.sdk.MobileRTCVideoView;
 import us.zoom.sdk.MobileRTCVideoViewManager;
 import us.zoom.sdk.ZoomSDK;
 
-public class ZoomShareViewManager extends SimpleViewManager<MobileRTCVideoView> {
+public class ZoomShareViewManager extends SimpleViewManager<ZoomShareView> {
 
   @NonNull
   @Override
@@ -21,12 +21,12 @@ public class ZoomShareViewManager extends SimpleViewManager<MobileRTCVideoView> 
 
   @NonNull
   @Override
-  protected MobileRTCVideoView createViewInstance(@NonNull ThemedReactContext reactContext) {
-    return new MobileRTCVideoView(reactContext);
+  protected ZoomShareView createViewInstance(@NonNull ThemedReactContext reactContext) {
+    return new ZoomShareView(reactContext);
   }
 
   @ReactProp(name = "userID")
-  public void setShareVideoUnit(MobileRTCVideoView view, String userID) {
+  public void setShareVideoUnit(ZoomShareView view, String userID) {
     if (!ZoomSDK.getInstance().isInitialized()) {
       return;
     }
