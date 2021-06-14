@@ -63,7 +63,6 @@ public class ZoomView extends FrameLayout implements SDKVideoView.c, LifecycleEv
   protected void onFinishInflate() {
     super.onFinishInflate();
     mDefaultVideoView = findViewById(R.id.videoView);
-    mDefaultVideoView.setZOrderMediaOverlay(true);
     MobileRTCVideoView root = mDefaultVideoView.findViewById(R.id.videoView);
     try {
       surfaceView = (SDKVideoView) ((RelativeLayout) root.getChildAt(0)).getChildAt(0);
