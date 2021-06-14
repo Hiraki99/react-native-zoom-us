@@ -32,7 +32,7 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard.cfg'
         }
     }
@@ -55,6 +55,6 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation 'com.google.android.material:material:1.4.0-alpha02'
     implementation 'com.amitshekhar.android:glide-bitmap-pool:0.0.1'
-    implementation files('libs/commonlib.aar')
-    implementation files('libs/mobilertc.aar')
+//    implementation files('libs/commonlib.aar')
+//    implementation files('libs/mobilertc.aar')
 }

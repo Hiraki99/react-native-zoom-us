@@ -1,8 +1,7 @@
 package ch.milosz.reactnative;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
-import android.view.LayoutInflater;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 
@@ -10,10 +9,8 @@ import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.annotations.ReactProp;
 
-import ch.milosz.reactnative.view.ZoomView;
-
 @SuppressLint("InflateParams")
-public class ZoomViewManager extends SimpleViewManager<ZoomView> {
+public class ZoomViewManager extends SimpleViewManager<View> {
 
   @NonNull
   @Override
@@ -23,13 +20,11 @@ public class ZoomViewManager extends SimpleViewManager<ZoomView> {
 
   @NonNull
   @Override
-  protected ZoomView createViewInstance(@NonNull ThemedReactContext reactContext) {
-    LayoutInflater inflater = (LayoutInflater) reactContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-    return (ZoomView) inflater.inflate(R.layout.layout_meeting_content_normal, null);
+  protected View createViewInstance(@NonNull ThemedReactContext reactContext) {
+    return new View(reactContext);
   }
 
   @ReactProp(name = "userID")
-  public void setAttendeeVideoUnit(ZoomView view, String userID) {
-    view.setAttendeeVideoUnit(userID);
+  public void setAttendeeVideoUnit(View view, String userID) {
   }
 }
