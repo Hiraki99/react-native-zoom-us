@@ -320,7 +320,7 @@ public class RNZoomUsModule extends ReactContextBaseJavaModule implements
 
   @ReactMethod
   public void leaveCurrentMeeting() {
-    if (mZoomSDK.getInMeetingService() == null) {
+    if (mZoomSDK == null || mZoomSDK.getInMeetingService() == null) {
       return;
     }
     mZoomSDK.getInMeetingService().leaveCurrentMeeting(false);
@@ -328,7 +328,7 @@ public class RNZoomUsModule extends ReactContextBaseJavaModule implements
 
   @ReactMethod
   public void getParticipants(final Callback callback) {
-    if (mZoomSDK.getInMeetingService() == null) {
+    if (mZoomSDK == null || mZoomSDK.getInMeetingService() == null) {
       return;
     }
     Objects.requireNonNull(mContext.getCurrentActivity()).runOnUiThread(() -> {
@@ -360,7 +360,7 @@ public class RNZoomUsModule extends ReactContextBaseJavaModule implements
 
   @ReactMethod
   public void getUserInfo(final String userId, final Callback callback) {
-    if (mZoomSDK.getInMeetingService() == null) {
+    if (mZoomSDK == null || mZoomSDK.getInMeetingService() == null) {
       return;
     }
     Objects.requireNonNull(mContext.getCurrentActivity()).runOnUiThread(() -> {
